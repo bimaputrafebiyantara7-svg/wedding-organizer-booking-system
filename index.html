@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HNP Wedding Organizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: { 300: '#FCE68D', 400: '#F3C623', 500: '#D4AF37', 600: '#AA8A2A', 700: '#80671F' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body class="min-h-dvh selection:bg-gold-500/30 flex flex-col relative overflow-x-hidden">
+
+   
+    <div id="toast-success"
+        class="fixed top-[-100px] left-1/2 -translate-x-1/2 z-[9999] bg-gradient-to-r from-gold-600 to-gold-500 text-black px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(212,175,55,0.4)] font-bold flex items-center gap-3 transition-all duration-500 pointer-events-none border border-gold-300">
+        <i class="fa-solid fa-circle-check text-xl"></i>
+        <span id="toast-msg" class="text-sm whitespace-nowrap">Booking Berhasil Dilakukan!</span>
+    </div>
+
+    
+    <div id="auth-section"
+        class="min-h-dvh flex hidden relative bg-black overflow-hidden w-full transition-colors duration-500">
+
+        <button onclick="cancelLogin()"
+            class="absolute top-6 left-6 z-50 text-gold-500 hover:text-white flex items-center gap-2 font-bold bg-zinc-900/80 backdrop-blur-xl px-4 py-2.5 rounded-full transition-all border border-gold-500/30 shadow-sm active:scale-95">
+            <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">Kembali ke Katalog</span>
+        </button>
+
+        <div id="dynamic-login-bg-mobile"
+            class="absolute inset-0 lg:hidden bg-[length:100%_auto] sm:bg-cover bg-no-repeat bg-top opacity-50 z-0 transition-opacity duration-500"
+            style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80');">
+        </div>
+        <div class="absolute inset-0 lg:hidden bg-gradient-to-b from-transparent via-black/95 to-black z-0"></div>
+
+        <div
+            class="absolute top-[-5%] left-[-10%] w-[500px] h-[500px] bg-gold-600/20 blur-[100px] rounded-full pointer-events-none z-0">
+        </div>
+        <div
+            class="absolute bottom-[-5%] right-[-10%] w-[500px] h-[500px] bg-yellow-900/30 blur-[100px] rounded-full pointer-events-none z-0">
+        </div>
+
+        <div class="w-full flex flex-col lg:flex-row max-w-7xl mx-auto z-10 min-h-dvh relative">
+            <div class="hidden lg:flex w-1/2 flex-col justify-center p-8 relative min-h-dvh">
+                <div id="dynamic-login-bg"
+                    class="absolute inset-8 rounded-[40px] bg-cover bg-center overflow-hidden shadow-[0_32px_64px_rgba(212,175,55,0.15)] transition-all duration-500 border border-gold-500/20"
+                    style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80');">
+                    <div class="absolute inset-0 bg-gradient-to-br from-black/90 via-black/50 to-transparent"></div>
+                    <div class="absolute bottom-20 left-16 right-16">
+                        <div id="app-logo-auth" class="text-gold-500 mb-6 drop-shadow-md transition-all duration-300">
+                            <i class="fa-solid fa-crown text-6xl"></i>
+                        </div>
+                        <h1 class="text-5xl lg:text-6xl font-black text-white mb-6 leading-tight tracking-tight">
+                            Wujudkan <br><span class="text-gold-500">Pernikahan Impian.</span></h1>
+                        <p class="text-lg text-zinc-300 font-medium max-w-md leading-relaxed">Bergabung sekarang dan
+                            temukan paket eksklusif yang dirancang khusus untuk momen bahagia Anda.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/2 flex items-center justify-center px-5 py-8 sm:p-12 min-h-dvh relative">
+                <div
+                    class="w-full max-w-[420px] relative z-10 bg-zinc-900/80 backdrop-blur-2xl p-7 sm:p-10 rounded-[32px] sm:rounded-[40px] shadow-2xl border border-gold-500/20 flex flex-col mt-8 sm:mt-0">
+
+                    <div class="shrink-0 mb-6">
+                        <div class="text-center pt-2 lg:hidden mb-5">
+                            <div id="app-logo-auth-mobile"
+                                class="text-gold-500 flex justify-center drop-shadow-md transition-all duration-300">
+                                <i class="fa-solid fa-crown text-5xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Selamat Datang
+                            </h2>
+                            <p class="mt-2 text-sm text-gold-500/80 font-medium" id="auth-subtitle">Masuk ke akun Anda
+                                untuk melanjutkan</p>
+                        </div>
+
+                        <div
+                            class="bg-black/60 p-1.5 rounded-[16px] flex gap-1 relative mt-7 border border-gold-500/10">
+                            <button onclick="switchAuthTab('login')" id="tab-login"
+                                class="flex-1 py-2.5 rounded-[12px] bg-zinc-800 shadow-sm text-gold-500 font-bold text-sm transition-all duration-300 border border-gold-500/30">Masuk</button>
+                            <button onclick="switchAuthTab('register')" id="tab-register"
+                                class="flex-1 py-2.5 rounded-[12px] text-zinc-500 hover:text-gold-400 font-bold text-sm transition-all duration-300">Daftar</button>
+                        </div>
+                    </div>
+
+                    <div
+                        class="overflow-y-auto hide-scrollbar scroll-touch flex-1 w-full px-1 max-h-[50vh] sm:max-h-[60vh]">
+
+                        
+                        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4 pb-2">
+                            <div class="relative group">
+                                <i
+                                    class="fa-solid fa-user absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-gold-500 transition-colors text-sm"></i>
+                                <input id="l-user" required type="text" placeholder="Username"
+                                    class="w-full bg-black/60 border border-zinc-800 rounded-[20px] pl-12 pr-5 py-4 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-white placeholder-zinc-500 transition-all text-sm sm:text-base">
+                            </div>
+                            <div class="relative group">
+                                <i
+                                    class="fa-solid fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-gold-500 transition-colors text-sm"></i>
+                                <input id="l-pass" required type="password" placeholder="Password"
+                                    class="w-full bg-black/60 border border-zinc-800 rounded-[20px] pl-12 pr-12 py-4 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-white placeholder-zinc-500 transition-all text-sm sm:text-base">
+                                <button type="button" onclick="togglePassword('l-pass', 'l-eye')"
+                                    class="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-gold-500 focus:outline-none transition-colors"><i
+                                        id="l-eye" class="fa-solid fa-eye"></i></button>
+                            </div>
+                            <button type="submit" id="btn-login"
+                                class="w-full flex justify-center py-4 px-4 rounded-[20px] shadow-lg shadow-gold-500/20 text-[16px] font-bold text-black bg-gradient-to-r from-gold-400 to-gold-600 hover:from-gold-300 hover:to-gold-500 active:scale-[0.98] transition-all mt-2">Masuk
+                                Sekarang</button>
+                        </form>
+
+                        
+                        <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden pb-6">
+                            <div class="flex flex-col items-center justify-center mb-2">
+                                <div onclick="document.getElementById('r-foto').click()"
+                                    class="relative w-24 h-24 rounded-full bg-black/60 flex items-center justify-center cursor-pointer overflow-hidden border border-zinc-800 group transition-all hover:ring-2 ring-gold-500 shrink-0">
+                                    <input type="file" id="r-foto" accept="image/*" class="hidden"
+                                        onchange="previewImage(event, 'r-foto-preview', 'authFotoBase64', true)">
+                                    <div id="r-foto-icon"
+                                        class="text-center group-hover:scale-110 transition-transform">
+                                        <i
+                                            class="fa-solid fa-camera text-zinc-500 text-xl mb-1 group-hover:text-gold-500"></i>
+                                        <p
+                                            class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-gold-500">
+                                            Foto Profil</p>
+                                    </div>
+                                    <img id="r-foto-preview" src=""
+                                        class="absolute inset-0 w-full h-full object-cover hidden">
+                                </div>
+                            </div>
+
+                            <div class="relative group">
+                                <i
+                                    class="fa-solid fa-address-card absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-gold-500 transition-colors text-sm"></i>
+                                <input id="r-nama" required type="text" placeholder="Nama Lengkap Klien"
+                                    class="w-full bg-black/60 border border-zinc-800 rounded-[20px] pl-12 pr-5 py-4 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-white placeholder-zinc-500 transition-all text-sm sm:text-base">
+                            </div>
+                            <div class="relative group">
+                                <i
+                                    class="fa-solid fa-phone absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-gold-500 transition-colors text-sm"></i>
+                                <input id="r-hp" required type="tel" placeholder="No. WhatsApp Aktif"
+                                    class="w-full bg-black/60 border border-zinc-800 rounded-[20px] pl-12 pr-5 py-4 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-white placeholder-zinc-500 transition-all text-sm sm:text-base">
+                            </div>
+                            <div class="relative group">
+                                <i
+                                    class="fa-solid fa-user absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-gold-500 transition-colors text-sm"></i>
+                                <input id="r-user" required type="text" placeholder="Username Baru"
+                                    class="w-full bg-black/60 border border-zinc-800 rounded-[20px] pl-12 pr-5 py-4 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-white placeholder-zinc-500 transition-all text-sm sm:text-base">
+                            </div>
+                            <div class="relative group">
+                                <i
+                                    class="fa-solid fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-gold-500 transition-colors text-sm"></i>
+                                <input id="r-pass" required type="password" placeholder="Buat Password"
+                                    class="w-full bg-black/60 border border-zinc-800 rounded-[20px] pl-12 pr-12 py-4 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-white placeholder-zinc-500 transition-all text-sm sm:text-base">
+                                <button type="button" onclick="togglePassword('r-pass', 'r-eye')"
+                                    class="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-gold-500 focus:outline-none transition-colors"><i
+                                        id="r-eye" class="fa-solid fa-eye"></i></button>
+                            </div>
+                            <button type="submit" id="btn-register"
+                                class="w-full flex justify-center py-4 px-4 rounded-[20px] shadow-lg shadow-gold-500/20 text-[16px] font-bold text-black bg-gradient-to-r from-gold-400 to-gold-600 hover:from-gold-300 hover:to-gold-500 active:scale-[0.98] transition-all mt-4">Daftar
+                                Akun</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="app-section" class="hidden flex-1 flex flex-col relative w-full min-h-dvh overflow-x-hidden bg-black">
+
+        
+        <div
+            class="fixed top-[0%] left-[-10%] w-[32rem] h-[32rem] bg-gold-600/10 blur-[120px] rounded-full pointer-events-none z-0">
+        </div>
+        <div
+            class="fixed bottom-[-10%] right-[-10%] w-[32rem] h-[32rem] bg-yellow-900/10 blur-[120px] rounded-full pointer-events-none z-0">
+        </div>
+
+        <div class="relative z-10 flex-1 flex flex-col w-full">
+
+            <nav
+                class="fixed inset-x-4 md:inset-x-auto md:w-[800px] md:left-1/2 md:-translate-x-1/2 z-40 glass-panel rounded-full px-5 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all safe-pt-nav">
+                <div class="flex justify-between items-center h-10">
+                    <div class="flex items-center gap-2 text-gold-500 pl-2 cursor-pointer active:scale-95 transition-transform"
+                        onclick="showHome()">
+                        <span id="app-logo-nav-icon"><i
+                                class="fa-solid fa-crown text-2xl drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]"></i></span>
+                        <span class="font-bold text-lg tracking-tight hidden sm:block text-white">HNP Wedding
+                            Organizer</span>
+                    </div>
+                    <div class="flex items-center gap-4 sm:gap-5 pr-1">
+                        <button onclick="showFavorites()"
+                            class="text-zinc-400 hover:text-gold-500 active:scale-90 transition-all" title="Wishlist">
+                            <i class="fa-solid fa-heart text-[20px] sm:text-[22px]"></i>
+                        </button>
+                        <button id="nav-cart-icon" onclick="showPesanan()"
+                            class="text-zinc-400 hover:text-gold-500 active:scale-90 transition-all relative"
+                            title="Booking Saya">
+                            <i class="fa-solid fa-calendar-check text-[20px] sm:text-[22px]"></i>
+                            <span id="badge-pesanan-count"
+                                class="absolute -top-1.5 -right-2 bg-red-600 text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-black shadow-sm hidden transition-transform duration-300">0</span>
+                        </button>
+                        <div class="h-6 w-px bg-zinc-700 mx-1"></div>
+                        <div class="flex items-center gap-3 cursor-pointer active:scale-95 transition-all"
+                            onclick="toggleProfileModal()">
+                            <div class="text-right hidden md:block">
+                                <p id="nav-nama" class="text-sm font-bold text-white leading-none">Tamu</p>
+                            </div>
+                            <img id="nav-foto" src=""
+                                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover shadow-sm ring-2 ring-gold-500/50">
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div id="sec-home" class="flex-1 w-full">
+                <div id="banner-container"
+                    class="relative max-w-7xl mx-4 lg:mx-auto h-[240px] sm:h-[350px] md:h-[480px] bg-zinc-900 rounded-[28px] md:rounded-[48px] overflow-hidden group shadow-[0_24px_48px_rgba(0,0,0,0.4)] safe-mt-content border border-gold-500/20"
+                    ontouchstart="handleBannerTouchStart(event)" ontouchend="handleBannerTouchEnd(event)">
+                    <div id="banner-track" class="w-full h-full relative z-10">
+                        
+                    </div>
+                    <div class="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center gap-2 z-30"
+                        id="banner-dots"></div>
+                    <button onclick="prevSlide()"
+                        class="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-30 bg-black/50 border border-gold-500/30 hover:bg-gold-600 text-white w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg active:scale-90 backdrop-blur-md"><i
+                            class="fa-solid fa-chevron-left text-xs sm:text-base"></i></button>
+                    <button onclick="nextSlideManual()"
+                        class="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-30 bg-black/50 border border-gold-500/30 hover:bg-gold-600 text-white w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg active:scale-90 backdrop-blur-md"><i
+                            class="fa-solid fa-chevron-right text-xs sm:text-base"></i></button>
+                </div>
+
+                <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+                    
+                    <div onclick="bukaModalCustom()"
+                        class="mb-4 w-full bg-gradient-to-r from-zinc-900 to-black border border-gold-500/30 rounded-[28px] p-6 sm:p-8 text-white shadow-lg cursor-pointer transform hover:-translate-y-1 hover:border-gold-500/60 transition-all duration-300 flex justify-between items-center relative overflow-hidden group">
+
+                        
+                        <div
+                            class="absolute top-0 right-0 w-48 h-48 bg-gold-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 group-hover:translate-x-0 transition-transform duration-700">
+                        </div>
+
+                        <div class="relative z-10">
+                            <h3 class="font-bold text-xl sm:text-2xl mb-1 text-gold-500 drop-shadow-md">Rancang Konsep
+                                Custom</h3>
+                            <p class="text-xs sm:text-sm text-zinc-300 font-medium">Wujudkan acara impian yang dirancang
+                                khusus untuk Anda.</p>
+                        </div>
+
+                        <div
+                            class="w-12 h-12 sm:w-14 sm:h-14 bg-gold-500/10 border border-gold-500/30 rounded-full flex items-center justify-center text-xl sm:text-2xl backdrop-blur-md relative z-10 shrink-0 group-hover:scale-110 transition-transform">
+                            <i
+                                class="fa-solid fa-wand-magic-sparkles text-gold-400 group-hover:rotate-12 transition-transform duration-300"></i>
+                        </div>
+                    </div>
+
+                    
+                    <div onclick="showVendor()"
+                        class="mb-8 w-full bg-black border border-zinc-800 rounded-[28px] p-6 sm:p-8 text-white shadow-lg cursor-pointer transform hover:-translate-y-1 hover:border-gold-500/50 transition-all duration-300 flex justify-between items-center relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <h3 class="font-bold text-xl sm:text-2xl mb-1 text-white">Eksplorasi Vendor Acara</h3>
+                            <p class="text-xs sm:text-sm text-zinc-400">Temukan referensi MUA, Dekorasi, Gedung, dan
+                                vendor lainnya.</p>
+                        </div>
+                        <div
+                            class="w-12 h-12 sm:w-14 sm:h-14 bg-zinc-900 border border-zinc-700 rounded-full flex items-center justify-center text-xl sm:text-2xl relative z-10 shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-store text-zinc-400 group-hover:text-gold-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 md:mb-8 px-2 flex flex-col md:flex-row md:items-end justify-between gap-5">
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2">Katalog Layanan &
+                                Paket</h2>
+                            <div class="relative w-full md:w-80 mt-3">
+                                <i
+                                    class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"></i>
+                                <input type="text" id="search-produk" onkeyup="terapkanFilter()"
+                                    placeholder="Cari paket idaman..."
+                                    class="w-full bg-zinc-900/80 border border-zinc-800 shadow-inner rounded-full py-3.5 pl-11 pr-4 focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 transition-all font-medium text-sm text-white placeholder-zinc-500">
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-3 w-full md:w-auto">
+                            <div id="loading" class="text-xs sm:text-sm text-gold-500 hidden font-medium"><i
+                                    class="fa-solid fa-circle-notch fa-spin mr-1"></i> Menyinkronkan data...</div>
+                            <div class="flex bg-zinc-900 p-1 rounded-full shadow-sm border border-zinc-800">
+                                <button onclick="setSortFilter('terbaru')" id="btn-sort-terbaru"
+                                    class="bg-gold-600 text-black px-5 py-2 rounded-full text-xs font-bold shadow-sm transition-colors">Paket
+                                    Baru</button>
+                                <button onclick="setSortFilter('terlaris')" id="btn-sort-terlaris"
+                                    class="text-zinc-400 hover:text-gold-400 px-5 py-2 rounded-full text-xs font-bold transition-colors">Terpopuler</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 px-2">
+                        <div id="kategori-container"
+                            class="flex gap-2 overflow-x-auto hide-scrollbar scroll-touch pb-2"></div>
+                    </div>
+                    <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+                </main>
+            </div>
+
+           
+            <div id="sec-detail-produk" class="flex-1 w-full hidden">
+                <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 safe-mt-content">
+                    <button onclick="showHome()"
+                        class="mb-6 flex items-center gap-2 text-gold-500 hover:text-gold-400 font-bold transition-colors w-max bg-zinc-900/50 px-4 py-2 rounded-full border border-gold-500/20">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </button>
+                    <div
+                        class="bg-zinc-900/80 backdrop-blur-xl rounded-[32px] sm:rounded-[40px] shadow-2xl border border-gold-500/20 p-4 md:p-8 flex flex-col md:flex-row gap-8">
+                        <div class="w-full md:w-1/2 flex flex-col gap-4">
+                            <div
+                                class="relative w-full aspect-[4/5] bg-black rounded-[28px] overflow-hidden group border border-zinc-800">
+                                <img id="dtl-gambar-utama" src=""
+                                    class="w-full h-full object-cover cursor-zoom-in group-hover:scale-105 transition-transform duration-500 opacity-90 hover:opacity-100">
+                                <button id="dtl-btn-fav" onclick=""
+                                    class="absolute top-4 right-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/50 backdrop-blur border border-gold-500/30 flex items-center justify-center transition active:scale-90 z-10 shadow-md">
+                                    <i class="fa-regular fa-heart text-lg sm:text-xl text-zinc-300"></i>
+                                </button>
+                            </div>
+                            <div id="dtl-thumbnail-container"
+                                class="flex gap-3 overflow-x-auto hide-scrollbar scroll-touch pb-2"></div>
+                        </div>
+
+                        <div class="w-full md:w-1/2 flex flex-col">
+                            <span id="dtl-kategori"
+                                class="inline-block bg-zinc-800 border border-gold-500/20 text-gold-400 font-bold px-4 py-1.5 rounded-full text-xs mb-4 w-max uppercase tracking-widest">Kategori</span>
+                            <h2 id="dtl-nama"
+                                class="text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2">Nama Paket
+                            </h2>
+                            <p id="dtl-harga" class="text-2xl md:text-3xl font-black text-gold-500 mb-6 drop-shadow-sm">
+                                Rp 0</p>
+
+                            <div class="h-px bg-zinc-800 w-full mb-6"></div>
+
+                            <h4 class="font-bold text-gold-500 mb-2 uppercase tracking-wide text-sm">Fasilitas &
+                                Deskripsi</h4>
+                            <p id="dtl-deskripsi"
+                                class="text-zinc-300 text-sm leading-relaxed mb-6 whitespace-pre-wrap">Deskripsi...</p>
+
+                            <div class="mb-8">
+                                <h4 class="font-bold text-white mb-3 text-sm">Pilih Porsi / Kapasitas <span
+                                        class="text-gold-500">*</span></h4>
+                                <div id="dtl-varian-list" class="flex flex-col gap-2.5"></div>
+                            </div>
+
+                            <div class="flex items-center gap-4 mb-8">
+                                <div
+                                    class="bg-zinc-900 text-zinc-400 font-bold px-4 py-3 rounded-xl text-sm border border-gold-500/20 flex-1 text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-users text-gold-500"></i> Sisa Kuota: <span id="dtl-stok"
+                                        class="text-white font-black text-lg ml-1">0</span>
+                                </div>
+                            </div>
+
+                            <button id="dtl-btn-beli"
+                                class="w-full bg-zinc-800 text-zinc-500 py-4 sm:py-5 rounded-full font-bold text-base sm:text-lg transition-all cursor-not-allowed border border-zinc-700"
+                                disabled>Pilih Minimal 1 Porsi/Paket</button>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            
+            <div id="sec-favorite" class="flex-1 w-full hidden">
+                <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 safe-mt-content">
+                    <div class="mb-8 px-2 flex items-center gap-4">
+                        <button onclick="showHome()"
+                            class="w-10 h-10 rounded-full bg-zinc-900 border border-gold-500/20 shadow-sm flex items-center justify-center text-gold-500 hover:text-white active:scale-90 transition-all"><i
+                                class="fa-solid fa-chevron-left"></i></button>
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight text-gold-500"><i
+                                    class="fa-solid fa-heart mr-2"></i>Wishlist Impian</h2>
+                            <p class="text-zinc-400 font-medium mt-1 text-xs sm:text-sm">Paket yang Anda simpan untuk
+                                referensi.</p>
+                        </div>
+                    </div>
+                    <div id="favorite-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+                </main>
+            </div>
+
+            
+            <div id="sec-pesanan" class="flex-1 w-full hidden">
+                <main class="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 safe-mt-content">
+                    <div class="mb-8 px-2 flex items-center gap-4">
+                        <button onclick="showHome()"
+                            class="w-10 h-10 rounded-full bg-zinc-900 border border-gold-500/20 shadow-sm flex items-center justify-center text-gold-500 hover:text-white active:scale-90 transition-all"><i
+                                class="fa-solid fa-chevron-left"></i></button>
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight text-gold-500"><i
+                                    class="fa-solid fa-calendar-check mr-2"></i>Status Pesanan</h2>
+                            <p class="text-zinc-400 font-medium mt-1 text-xs sm:text-sm">Pantau jadwal dan pembayaran
+                                Anda di sini.</p>
+                        </div>
+                    </div>
+                    <div id="list-pesanan-customer" class="space-y-4"></div>
+                </main>
+            </div>
+
+            
+            <div id="sec-vendor" class="flex-1 w-full hidden">
+                <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 safe-mt-content">
+                    <div class="mb-6 px-2 flex items-center gap-4">
+                        <button onclick="showHome()"
+                            class="w-10 h-10 rounded-full bg-zinc-900 border border-gold-500/20 shadow-sm flex items-center justify-center text-gold-500 hover:text-white active:scale-90 transition-all"><i
+                                class="fa-solid fa-chevron-left"></i></button>
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight"><i
+                                    class="fa-solid fa-store mr-2 text-gold-500"></i>Daftar Vendor</h2>
+                        </div>
+                    </div>
+                    <div class="mb-6 px-2">
+                        <div id="kategori-vendor-container"
+                            class="flex gap-2 overflow-x-auto hide-scrollbar scroll-touch pb-2"></div>
+                    </div>
+                    <div id="vendor-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+                </main>
+            </div>
+
+            
+            <div id="modal-detail-vendor"
+                class="modal opacity-0 pointer-events-none fixed inset-0 flex items-end sm:items-center justify-center z-[90] transition-opacity duration-300">
+                <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="tutupDetailVendor()"></div>
+                <div
+                    class="modal-sheet bg-zinc-900 border border-gold-500/20 w-full sm:w-11/12 sm:max-w-2xl mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-2xl z-[95] max-h-[90vh] flex flex-col relative pb-safe">
+                    <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mt-4 mb-2 sm:hidden shrink-0"></div>
+                    <button type="button" onclick="tutupDetailVendor()"
+                        class="absolute top-4 right-4 bg-black border border-zinc-800 text-zinc-400 w-8 h-8 rounded-full flex items-center justify-center transition-colors z-20"><i
+                            class="fa-solid fa-times"></i></button>
+
+                    <div class="overflow-y-auto hide-scrollbar scroll-touch flex-1 p-4 sm:p-6">
+                        <div
+                            class="relative w-full h-48 sm:h-64 bg-black rounded-[24px] overflow-hidden border border-zinc-800 mb-4">
+                            <img id="vdtl-gambar-utama" src="" class="w-full h-full object-cover cursor-zoom-in">
+                        </div>
+                        <div id="vdtl-thumbnail-container"
+                            class="flex gap-2 overflow-x-auto hide-scrollbar scroll-touch mb-4"></div>
+
+                        <span id="vdtl-kategori"
+                            class="bg-gold-500/10 text-gold-500 border border-gold-500/30 px-3 py-1 rounded-full text-[10px] font-bold uppercase">Kategori</span>
+                        <h2 id="vdtl-nama" class="text-2xl sm:text-3xl font-bold text-white mt-2 mb-4">Nama Vendor</h2>
+
+                        <div class="bg-black p-4 rounded-xl border border-zinc-800">
+                            <p class="text-xs font-bold text-zinc-500 mb-1 uppercase tracking-wider">Deskripsi & Layanan
+                            </p>
+                            <p id="vdtl-deskripsi" class="text-sm text-zinc-300 whitespace-pre-wrap">Deskripsi...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="text-zinc-500 py-8 text-center mt-auto font-medium text-xs sm:text-sm safe-pb relative z-10">
+                <p>&copy; 2026 HNP Wedding Organizer. Merajut Cerita, Mencipta Makna.</p>
+            </footer>
+
+            
+            <div id="wa-fab-container" class="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 z-50">
+                <div id="wa-menu"
+                    class="absolute bottom-full right-0 mb-4 bg-zinc-900 rounded-2xl shadow-2xl border border-gold-500/20 overflow-hidden opacity-0 pointer-events-none transition-all duration-300 transform translate-y-4 backdrop-blur-xl">
+                    <button onclick="hubungiAdminWa()" id="wa-link-btn"
+                        class="w-full text-left flex items-center gap-3 px-6 py-4 hover:bg-zinc-800 transition-colors whitespace-nowrap text-gold-500 font-bold">
+                        <i class="fa-brands fa-whatsapp text-2xl text-[#25D366]"></i>
+                        <span>Konsultasi Gratis</span>
+                    </button>
+                </div>
+
+                <button onclick="toggleWaMenu()"
+                    class="bg-gradient-to-r from-gold-600 to-gold-400 text-black border border-gold-300 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 relative z-10">
+                    <i class="fa-brands fa-whatsapp text-3xl sm:text-4xl text-black"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    
+    <div id="modal-zoom"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-center justify-center z-[100] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeZoom()"></div>
+        <div class="absolute top-0 inset-x-0 p-6 flex justify-between items-center z-20">
+            <div class="bg-zinc-900/50 border border-gold-500/30 px-4 py-1.5 rounded-full backdrop-blur-md">
+                <span id="zoom-counter" class="text-gold-500 text-sm font-bold tracking-widest">1 / 1</span>
+            </div>
+            <button onclick="closeZoom()"
+                class="bg-zinc-900/50 border border-gold-500/30 text-gold-500 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gold-500 hover:text-black transition active:scale-90 backdrop-blur-md">
+                <i class="fa-solid fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="relative w-full h-full flex items-center justify-center z-10 overflow-hidden">
+            <div id="zoom-track" class="flex w-full h-full overflow-x-auto snap-x-mandatory hide-scrollbar"></div>
+            <button onclick="moveZoomSlide(-1)"
+                class="hidden md:flex absolute left-8 bg-zinc-900/50 border border-gold-500/30 text-gold-500 hover:bg-gold-500 hover:text-black w-14 h-14 rounded-full items-center justify-center transition"><i
+                    class="fa-solid fa-chevron-left text-xl"></i></button>
+            <button onclick="moveZoomSlide(1)"
+                class="hidden md:flex absolute right-8 bg-zinc-900/50 border border-gold-500/30 text-gold-500 hover:bg-gold-500 hover:text-black w-14 h-14 rounded-full items-center justify-center transition"><i
+                    class="fa-solid fa-chevron-right text-xl"></i></button>
+        </div>
+    </div>
+
+    
+    <div id="profile-modal"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-end sm:items-center justify-center z-[50] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="toggleProfileModal()"></div>
+        <div
+            class="modal-sheet bg-zinc-900 border border-gold-500/20 w-full sm:w-11/12 sm:max-w-sm mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-[0_0_40px_rgba(0,0,0,0.8)] z-50 overflow-hidden relative pb-4 sm:pb-0 safe-pb">
+            <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mt-4 mb-2 sm:hidden"></div>
+            <div class="px-6 pb-6 pt-2 sm:pt-4 text-center">
+                <button onclick="toggleProfileModal()"
+                    class="absolute top-4 right-5 text-zinc-500 hover:text-gold-500 bg-black border border-zinc-800 w-8 h-8 rounded-full flex items-center justify-center transition-colors hidden sm:flex"><i
+                        class="fa-solid fa-times"></i></button>
+                <img id="prof-foto" src=""
+                    class="w-20 h-20 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-gold-500/30 shadow-lg mx-auto mt-2 bg-black">
+                <h3 id="prof-nama" class="text-xl sm:text-2xl font-bold text-white mt-4 tracking-tight">Nama Klien</h3>
+                <p id="prof-user" class="text-gold-500 font-medium text-sm sm:text-base">@username</p>
+                <div class="mt-6 bg-black border border-zinc-800 rounded-[24px] p-4 text-left">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-10 h-10 rounded-full bg-zinc-800 text-gold-500 flex items-center justify-center shadow-md">
+                            <i class="fa-solid fa-phone text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-zinc-500 text-[10px] font-semibold uppercase tracking-wider">No WhatsApp</p>
+                            <p id="prof-hp" class="font-bold text-white text-sm sm:text-base">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-berkas-profil" onclick="bukaModalBerkas()"
+                    class="hidden w-full mt-4 bg-gradient-to-r from-gold-600 to-gold-400 text-black font-extrabold py-3.5 sm:py-4 rounded-[20px] shadow-lg shadow-gold-500/20 active:scale-95 transition-all text-[15px] sm:text-[17px] flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-folder-open"></i> Lengkapi Berkas Acara
+                </button>
+                
+                <button id="btn-panduan-profil" onclick="bukaModalPanduanDariProfil()"
+                    class="hidden w-full mt-3 bg-yellow-900/30 hover:bg-yellow-600 text-yellow-400 hover:text-black border border-yellow-500/20 font-bold py-3.5 sm:py-4 rounded-[20px] shadow-lg active:scale-95 transition-all text-[15px] sm:text-[17px] flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-book-open"></i> Lihat & Edit Buku Panduan
+                </button>
+                <button onclick="handleLogout()"
+                    class="w-full mt-6 border border-red-500/50 text-red-400 hover:bg-red-500/10 font-bold py-3.5 sm:py-4 rounded-full active:scale-95 transition-all text-[15px] sm:text-[17px]">Keluar
+                    Akun</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-custom"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-end sm:items-center justify-center z-[80] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="toggleModalCustom()"></div>
+        <div
+            class="modal-sheet bg-zinc-900 border border-gold-500/20 w-full sm:w-11/12 sm:max-w-lg mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-2xl z-[85] h-[90vh] sm:max-h-[85vh] flex flex-col relative safe-pb">
+            <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mt-4 mb-2 sm:hidden shrink-0"></div>
+            <div class="px-5 sm:px-6 py-4 flex justify-between items-center shrink-0 border-b border-zinc-800">
+                <p class="text-lg sm:text-2xl font-bold text-white tracking-tight text-gold-500">Form Custom Pernikahan
+                </p>
+                <button onclick="toggleModalCustom()"
+                    class="text-zinc-500 hover:text-gold-500 bg-black w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+
+            <div class="px-5 sm:px-6 overflow-y-auto hide-scrollbar scroll-touch flex-1 py-4 space-y-5">
+                <div class="bg-gold-500/10 border border-gold-500/30 p-4 rounded-[20px]">
+                    <i class="fa-solid fa-hand-holding-heart text-2xl text-gold-400 mb-2"></i>
+                    <p class="text-gold-200 text-xs sm:text-sm font-medium">Beri tahu kami konsep pernikahan impian
+                        Anda. Tim kami akan menyusun rincian estimasi biaya (Quotation) untuk Anda diskusikan.</p>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-white mb-2 text-sm text-gold-500">Fokus Layanan</label>
+                    <select id="mc-kat"
+                        class="w-full bg-black border border-zinc-700 rounded-[16px] px-4 py-3.5 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none font-bold text-white appearance-none cursor-pointer">
+                        <option>Paket Intimate (Lengkap)</option>
+                        <option>Paket Premium (Lengkap)</option>
+                        <option>Dekorasi Saja</option>
+                        <option>Katering & Venue Saja</option>
+                        <option>Lainnya</option>
+                    </select>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="font-bold text-white text-sm text-gold-500">Estimasi Kebutuhan / Venue</label>
+                        <button onclick="addVarianCustom()"
+                            class="text-[10px] bg-zinc-800 border border-zinc-700 text-gold-400 hover:text-gold-300 px-3 py-1.5 rounded-full font-bold active:scale-95 transition"><i
+                                class="fa-solid fa-plus mr-1"></i> Tambah Item</button>
+                    </div>
+                    <div id="mc-varian-list" class="space-y-2"></div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-white mb-2 text-sm text-gold-500">Gagasan Konsep & Tema</label>
+                    <textarea id="mc-desc"
+                        placeholder="Contoh: Saya ingin tema Rustic Outdoor di Pine Garden, undangan sekitar 300 pax, dominasi warna Emerald Green & Gold..."
+                        class="w-full bg-black border border-zinc-700 rounded-[16px] px-4 py-3 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-white h-28 text-sm resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-white mb-2 text-sm text-gold-500">Referensi Moodboard
+                        (Gambar/PDF)</label>
+                    <div onclick="document.getElementById('mc-file').click()"
+                        class="relative w-full h-24 border-2 border-dashed border-zinc-700 rounded-[16px] bg-black hover:bg-zinc-800 transition-colors flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
+                        <input type="file" id="mc-file" onchange="prosesFileCustom(event)" class="hidden">
+                        <div id="mc-file-icon"
+                            class="text-center text-zinc-600 group-hover:text-gold-500 transition-colors">
+                            <i class="fa-solid fa-file-arrow-up text-2xl mb-1"></i>
+                            <p class="text-[10px] font-bold uppercase tracking-wider" id="mc-file-name">Pilih Dokumen
+                            </p>
+                        </div>
+                        <img id="mc-file-preview" src=""
+                            class="absolute inset-0 w-full h-full object-contain bg-black hidden">
+                    </div>
+                </div>
+
+                <button onclick="submitCustomOrder()" id="btn-submit-custom"
+                    class="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-black font-extrabold py-4 rounded-full active:scale-[0.98] transition-all text-[15px] sm:text-[17px] shadow-lg shadow-gold-500/20">Kirim
+                    & Diskusi via WA</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="checkout-modal"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-end sm:items-center justify-center z-[80] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="toggleCheckoutModal()"></div>
+        <div
+            class="modal-sheet bg-zinc-900 border border-gold-500/20 w-full sm:w-11/12 sm:max-w-md mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-2xl z-[85] h-[85vh] sm:max-h-[90vh] flex flex-col relative safe-pb">
+            <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mt-4 mb-2 sm:hidden shrink-0"></div>
+            <div class="px-5 sm:px-6 py-3 flex justify-between items-center shrink-0 border-b border-zinc-800">
+                <p class="text-lg sm:text-2xl font-bold text-gold-500 tracking-tight">Reservasi & Pembayaran</p>
+                <button onclick="toggleCheckoutModal()"
+                    class="text-zinc-500 hover:text-gold-500 bg-black w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+
+            <div class="px-5 sm:px-6 overflow-y-auto hide-scrollbar scroll-touch flex-1 py-4">
+                <div class="flex gap-4 mb-5 pb-5 border-b border-zinc-800">
+                    <img id="m-gambar" src=""
+                        class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-[16px] shadow-sm bg-black border border-gold-500/20 shrink-0">
+                    <div class="flex flex-col justify-center w-full">
+                        <h3 id="m-nama" class="font-bold text-sm sm:text-base text-white leading-tight line-clamp-2">
+                            Nama Paket</h3>
+                        <div id="m-varian-list-checkout"
+                            class="mt-2 space-y-1.5 bg-black p-2 rounded-lg max-h-24 overflow-y-auto pr-1 border border-zinc-800">
+                            
+                        </div>
+                        <p id="m-harga" class="text-gold-400 font-extrabold mt-2 text-base sm:text-lg drop-shadow-sm">Rp
+                            0</p>
+                    </div>
+                </div>
+
+                <form id="form-beli" onsubmit="prosesBeli(event)" class="pb-4">
+                    <input type="hidden" id="m-id">
+                    <input type="hidden" id="m-total-base">
+                    <input type="hidden" id="m-total-qty">
+                    <input type="hidden" id="m-varian-array-json">
+
+                    <div class="mb-5">
+                        <label class="block font-semibold text-gold-500 mb-2 text-sm">Metode Transaksi</label>
+                        <div
+                            class="bg-black p-1 rounded-[12px] sm:rounded-[14px] flex gap-1 relative border border-zinc-800">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="metode_bayar" value="Transfer" class="peer sr-only" checked
+                                    onchange="toggleMetodeUI()">
+                                <div
+                                    class="text-center py-2 sm:py-2.5 rounded-[10px] peer-checked:bg-gold-500 peer-checked:text-black text-zinc-500 font-bold text-[12px] sm:text-[13px] transition-all">
+                                    <i class="fa-solid fa-building-columns mr-1"></i> Transfer/QRIS
+                                </div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="metode_bayar" value="Cash" class="peer sr-only"
+                                    onchange="toggleMetodeUI()">
+                                <div
+                                    class="text-center py-2 sm:py-2.5 rounded-[10px] peer-checked:bg-gold-500 peer-checked:text-black text-zinc-500 font-bold text-[12px] sm:text-[13px] transition-all">
+                                    <i class="fa-solid fa-handshake mr-1"></i> Bertemu di Kantor
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="block font-semibold text-gold-500 mb-2 text-sm">Jenis Pembayaran</label>
+                        <div
+                            class="bg-black p-1 rounded-[12px] sm:rounded-[14px] flex gap-1 relative border border-zinc-800">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="tipe_bayar" value="Lunas" class="peer sr-only" checked
+                                    onchange="toggleDPUI(); hitungTotalModal()">
+                                <div
+                                    class="text-center py-2 rounded-[10px] peer-checked:bg-gold-500 peer-checked:text-black text-zinc-500 font-semibold text-[12px] sm:text-[13px] transition-all">
+                                    Pelunasan Penuh</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="tipe_bayar" value="DP" class="peer sr-only"
+                                    onchange="toggleDPUI(); hitungTotalModal()">
+                                <div
+                                    class="text-center py-2 rounded-[10px] peer-checked:bg-gold-500 peer-checked:text-black text-zinc-500 font-semibold text-[12px] sm:text-[13px] transition-all">
+                                    Down Payment (DP)</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="area-custom-dp"
+                        class="mb-5 hidden bg-gold-500/10 p-4 rounded-[20px] border border-gold-500/20">
+                        <label class="block font-semibold text-gold-400 mb-3 text-[13px] sm:text-sm">Nilai Pengikat
+                            Jadwal (DP)</label>
+                        <div class="flex gap-2 sm:gap-4 items-center">
+                            <div class="flex-1">
+                                <div class="relative">
+                                    <input type="number" id="dp-pct" placeholder="Persen" value="30"
+                                        oninput="hitungDP('pct')"
+                                        class="w-full bg-black border border-zinc-700 rounded-xl px-2 sm:px-3 py-2 focus:ring-1 focus:ring-gold-500 outline-none font-bold text-white pr-6 text-sm">
+                                    <span
+                                        class="absolute right-2 top-1/2 -translate-y-1/2 font-bold text-zinc-500 text-sm">%</span>
+                                </div>
+                            </div>
+                            <div class="font-bold text-gold-500 text-sm">=</div>
+                            <div class="flex-[2]">
+                                <div class="relative">
+                                    <span
+                                        class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-zinc-500 text-sm">Rp</span>
+                                    <input type="number" id="dp-nom" placeholder="Nominal Rp" oninput="hitungDP('nom')"
+                                        class="w-full bg-black border border-zinc-700 rounded-xl pl-8 pr-3 py-2 focus:ring-1 focus:ring-gold-500 outline-none font-bold text-gold-400 text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="area-cash-info"
+                        class="hidden mb-5 bg-gold-500/10 p-4 rounded-[20px] border border-gold-500/20 text-center">
+                        <i class="fa-solid fa-handshake text-2xl sm:text-3xl text-gold-500 mb-2"></i>
+                        <p class="text-gold-400 font-bold text-sm">Janji Temu di Kantor</p>
+                        <p class="text-[11px] sm:text-xs text-zinc-400 mt-1">Selesaikan administrasi saat meeting dan
+                            penandatanganan kontrak secara langsung.</p>
+                    </div>
+
+                    <div class="pt-4 border-t border-zinc-800 flex items-center justify-between mb-4 sm:mb-6">
+                        <div>
+                            <span class="text-xs font-semibold text-zinc-400" id="lbl-total">Total Tagihan</span>
+                            <div id="m-totalharga"
+                                class="text-xl sm:text-2xl font-bold text-white tracking-tight drop-shadow-md">Rp 0
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-proses-beli"
+                        class="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-black font-extrabold py-3.5 sm:py-4 rounded-full active:scale-[0.97] transition-all text-[15px] sm:text-[17px] shadow-lg shadow-gold-500/20">Konfirmasi
+                        Booking & Lanjut WA</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+  
+    <div id="modal-bayar-tagihan"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-end sm:items-center justify-center z-[110] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="toggleModalBayar()"></div>
+        <div
+            class="modal-sheet bg-zinc-900 border border-gold-500/20 w-full sm:w-11/12 sm:max-w-md mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-[0_0_30px_rgba(212,175,55,0.2)] z-[115] relative p-6 safe-pb flex flex-col max-h-[90vh]">
+            <button onclick="toggleModalBayar()"
+                class="absolute top-4 right-4 text-zinc-500 hover:text-gold-500 bg-black w-8 h-8 rounded-full flex items-center justify-center transition-colors z-20"><i
+                    class="fa-solid fa-times"></i></button>
+            <h3 class="font-extrabold text-xl mb-4 text-gold-500 border-b border-zinc-800 pb-3">Selesaikan Pembayaran
+            </h3>
+            <input type="hidden" id="mbt-id">
+
+            <div id="mbt-dynamic-content" class="overflow-y-auto hide-scrollbar scroll-touch pb-4 space-y-4">
+               
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-bukti-customer"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-[120] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/95 backdrop-blur-md" onclick="tutupBuktiModal()"></div>
+        <div
+            class="modal-sheet bg-transparent w-full sm:max-w-md mx-auto rounded-[32px] sm:rounded-[40px] z-[120] flex flex-col items-center relative p-4">
+            <div
+                class="bg-zinc-900 border border-gold-500/30 p-2 rounded-[24px] sm:rounded-[32px] w-full mx-auto shadow-[0_0_30px_rgba(212,175,55,0.2)] relative">
+                <button onclick="tutupBuktiModal()"
+                    class="absolute -top-4 -right-4 bg-zinc-800 text-gold-500 w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-gold-500/50 hover:bg-black transition"><i
+                        class="fa-solid fa-times"></i></button>
+                <img id="img-bukti-customer" src=""
+                    class="w-full h-auto max-h-[70vh] object-contain rounded-[16px] sm:rounded-[24px] bg-black">
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-detail-pesanan"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-end sm:items-center justify-center z-[90] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="tutupDetailPesanan()"></div>
+        <div
+            class="modal-sheet bg-zinc-900 border border-gold-500/20 w-full sm:w-11/12 sm:max-w-md mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-2xl z-[95] max-h-[90vh] flex flex-col relative safe-pb">
+            <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mt-4 mb-2 sm:hidden shrink-0"></div>
+            <div class="px-5 sm:px-6 py-4 flex justify-between items-center shrink-0 border-b border-zinc-800">
+                <p class="text-lg sm:text-xl font-bold text-white tracking-tight text-gold-500">Invoice Acara</p>
+                <div class="flex items-center gap-2">
+                    <button onclick="cetakStruk()"
+                        class="text-black bg-gold-500 hover:bg-gold-400 w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm"><i
+                            class="fa-solid fa-print"></i></button>
+                    <button onclick="tutupDetailPesanan()"
+                        class="text-zinc-500 hover:text-gold-500 bg-black border border-zinc-800 w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i
+                            class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+            <div id="content-detail-pesanan"
+                class="px-5 sm:px-6 overflow-y-auto hide-scrollbar scroll-touch flex-1 py-4 space-y-4">
+              
+            </div>
+        </div>
+    </div>
+
+  
+    <div id="modal-panduan-klien"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-center justify-center z-[150] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/90 backdrop-blur-sm" onclick="toggleModalPanduanKlien()"></div>
+        <div
+            class="modal-sheet bg-zinc-900 border border-gold-500/30 w-full sm:w-11/12 max-w-5xl mx-auto rounded-[24px] sm:rounded-[32px] shadow-2xl z-[155] flex flex-col relative h-[95vh] sm:h-[90vh] overflow-hidden">
+
+            
+            <div
+                class="px-5 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-800 shrink-0 bg-[#111] gap-3">
+                <div>
+                    <h3 class="font-bold text-lg text-gold-500"><i class="fa-solid fa-book-open mr-2"></i>Buku Panduan
+                        Acara</h3>
+                    <select id="select-panduan-id" onchange="loadDataPanduanTerpilih()"
+                        class="mt-2 w-full sm:w-64 bg-black border border-zinc-700 text-white text-xs px-3 py-2 rounded-lg outline-none focus:border-gold-500 cursor-pointer">
+                        
+                    </select>
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto justify-end">
+                    <button onclick="simpanPanduanKlienByCustomer()" id="btn-simpan-panduan-klien"
+                        class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-md flex items-center gap-2"><i
+                            class="fa-solid fa-save"></i> Simpan Panduan</button>
+                    <button onclick="toggleModalPanduanKlien()"
+                        class="bg-zinc-800 text-zinc-400 hover:text-white w-9 h-9 rounded-full flex items-center justify-center transition-colors shrink-0"><i
+                            class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+
+            
+            <div
+                class="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-[#1a1a1a] p-2 sm:p-3 border-b border-zinc-800 shrink-0 shadow-inner">
+                <select onchange="formatTeksKlien('fontName', this.value); this.selectedIndex=0;"
+                    class="bg-black text-zinc-300 text-xs border border-zinc-700 rounded px-2 py-1.5 outline-none focus:border-gold-500 cursor-pointer">
+                    <option value="" disabled selected>Jenis Font</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Brush Script MT">Brush Script (Latin)</option>
+                </select>
+                <select onchange="formatTeksKlien('fontSize', this.value); this.selectedIndex=0;"
+                    class="bg-black text-zinc-300 text-xs border border-zinc-700 rounded px-2 py-1.5 outline-none focus:border-gold-500 cursor-pointer">
+                    <option value="" disabled selected>Ukuran</option>
+                    <option value="1">Kecil</option>
+                    <option value="2">Normal</option>
+                    <option value="3">Sedang</option>
+                    <option value="4">Besar</option>
+                    <option value="5">Lebih Besar</option>
+                    <option value="6">Sangat Besar</option>
+                    <option value="7">Raksasa</option>
+                </select>
+
+                <div class="w-px h-6 bg-zinc-700 mx-1"></div>
+
+                <button type="button" onmousedown="event.preventDefault(); formatTeksKlien('bold')"
+                    class="w-8 h-8 flex items-center justify-center bg-black border border-zinc-700 text-zinc-300 rounded hover:bg-gold-500 hover:text-black transition shadow-sm"><i
+                        class="fa-solid fa-bold text-xs"></i></button>
+                <button type="button" onmousedown="event.preventDefault(); formatTeksKlien('italic')"
+                    class="w-8 h-8 flex items-center justify-center bg-black border border-zinc-700 text-zinc-300 rounded hover:bg-gold-500 hover:text-black transition shadow-sm"><i
+                        class="fa-solid fa-italic text-xs"></i></button>
+                <button type="button" onmousedown="event.preventDefault(); formatTeksKlien('underline')"
+                    class="w-8 h-8 flex items-center justify-center bg-black border border-zinc-700 text-zinc-300 rounded hover:bg-gold-500 hover:text-black transition shadow-sm"><i
+                        class="fa-solid fa-underline text-xs"></i></button>
+
+                <div class="w-px h-6 bg-zinc-700 mx-1"></div>
+
+                <button type="button" onmousedown="event.preventDefault(); formatTeksKlien('justifyLeft')"
+                    class="w-8 h-8 flex items-center justify-center bg-black border border-zinc-700 text-zinc-300 rounded hover:bg-gold-500 hover:text-black transition shadow-sm"><i
+                        class="fa-solid fa-align-left text-xs"></i></button>
+                <button type="button" onmousedown="event.preventDefault(); formatTeksKlien('justifyCenter')"
+                    class="w-8 h-8 flex items-center justify-center bg-black border border-zinc-700 text-zinc-300 rounded hover:bg-gold-500 hover:text-black transition shadow-sm"><i
+                        class="fa-solid fa-align-center text-xs"></i></button>
+                <button type="button" onmousedown="event.preventDefault(); formatTeksKlien('justifyRight')"
+                    class="w-8 h-8 flex items-center justify-center bg-black border border-zinc-700 text-zinc-300 rounded hover:bg-gold-500 hover:text-black transition shadow-sm"><i
+                        class="fa-solid fa-align-right text-xs"></i></button>
+
+                <div class="w-px h-6 bg-zinc-700 mx-1"></div>
+
+                <div class="flex items-center gap-1.5 bg-black border border-zinc-700 rounded px-2 py-1 shadow-sm">
+                    <label for="klienFontColorPicker" class="text-[10px] text-zinc-400 cursor-pointer"
+                        title="Warna Teks"><i class="fa-solid fa-palette text-xs mr-1"></i> Teks</label>
+                    <input type="color" id="klienFontColorPicker" onchange="formatTeksKlien('foreColor', this.value)"
+                        class="w-5 h-5 cursor-pointer bg-transparent border-none p-0 rounded">
+                </div>
+
+                <button type="button" onmousedown="event.preventDefault(); resetFormatTeksKlien()"
+                    class="text-[10px] text-red-400 bg-red-900/30 border border-red-500/20 px-3 py-1.5 rounded hover:bg-red-500 hover:text-white transition shadow-sm"><i
+                        class="fa-solid fa-eraser mr-1"></i> Reset</button>
+
+                <div
+                    class="w-full sm:w-auto flex flex-wrap items-center gap-2 mt-2 sm:mt-0 sm:ml-auto border-t sm:border-t-0 border-zinc-800 pt-2 sm:pt-0">
+                    <button type="button" onclick="tambahElemenTeksKlien()"
+                        class="text-[10px] bg-blue-900/30 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded transition shadow-sm flex items-center"><i
+                            class="fa-solid fa-t font-bold mr-1"></i> Teks Bebas</button>
+                    <button type="button" onclick="document.getElementById('upload-gbr-layout-klien').click()"
+                        class="text-[10px] bg-emerald-900/30 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded transition shadow-sm flex items-center"><i
+                            class="fa-regular fa-image mr-1"></i> Gambar</button>
+                    <input type="file" id="upload-gbr-layout-klien" accept="image/*" class="hidden"
+                        onchange="tambahElemenGambarKlien(event)">
+
+                    <button type="button" onclick="tambahKertasA5Klien()"
+                        class="text-[10px] bg-zinc-800 text-zinc-300 hover:bg-zinc-600 border border-zinc-700 hover:text-white px-3 py-1.5 rounded transition shadow-sm flex items-center"><i
+                            class="fa-solid fa-file-circle-plus mr-1"></i> Halaman</button>
+                    <button type="button" onclick="hapusKertasA5Klien()"
+                        class="text-[10px] bg-red-900/30 text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 px-3 py-1.5 rounded transition shadow-sm flex items-center"><i
+                            class="fa-solid fa-trash mr-1"></i> Hapus Hal</button>
+                </div>
+            </div>
+
+          
+            <div class="flex-1 overflow-auto bg-[#525659] p-4 sm:p-8 relative flex justify-center shadow-inner">
+                <input type="hidden" id="panduan-klien-id">
+                <div id="area-editor-panduan-klien" class="w-max min-w-full flex flex-col items-center mx-auto">
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-berkas"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-end sm:items-center justify-center z-[130] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="toggleModalBerkas()"></div>
+        <div
+            class="modal-sheet bg-zinc-900 border border-gold-500/20 w-full sm:w-11/12 sm:max-w-2xl mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-2xl z-[135] h-[90vh] flex flex-col relative safe-pb">
+            <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mt-4 mb-2 sm:hidden shrink-0"></div>
+            <div class="px-5 sm:px-6 py-4 flex justify-between items-center shrink-0 border-b border-zinc-800">
+                <div>
+                    <p class="text-lg sm:text-xl font-bold text-gold-500 tracking-tight">Pemberkasan Acara</p>
+                    <p class="text-xs text-zinc-400">Lengkapi data untuk persiapan pernikahan Anda.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="cetakBerkasKlien()" title="Cetak Berkas"
+                        class="text-black bg-gold-500 hover:bg-gold-400 w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm"><i
+                            class="fa-solid fa-print"></i></button>
+                    <button onclick="toggleModalBerkas()" title="Tutup"
+                        class="text-zinc-500 hover:text-gold-500 bg-black w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i
+                            class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+
+           
+            <div id="berkas-loading-area"
+                class="hidden flex-1 flex-col items-center justify-center py-16 bg-[#111] z-20 absolute inset-x-0 bottom-0 top-[70px] rounded-b-[32px] sm:rounded-b-[40px]">
+            </div>
+
+          
+            <div id="berkas-form-area"
+                class="px-5 sm:px-6 overflow-y-auto hide-scrollbar scroll-touch flex-1 py-5 space-y-6 relative">
+
+               
+                <div>
+                    <label class="block font-bold text-gold-500 mb-2 text-sm">Pilih ID Booking <span
+                            class="text-red-500">*</span></label>
+                    <select id="berkas-id-booking" onchange="loadDataBerkasTerpilih()"
+                        class="w-full bg-black border border-zinc-700 rounded-[16px] px-4 py-3.5 focus:ring-1 focus:ring-gold-500 outline-none font-bold text-white appearance-none cursor-pointer">
+                        
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Nama Lengkap CPP (Pria)</label>
+                        <input id="b-cpp" type="text" placeholder="Nama Calon Pengantin Pria"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Nama Lengkap CPW (Wanita)</label>
+                        <input id="b-cpw" type="text" placeholder="Nama Calon Pengantin Wanita"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-t border-zinc-800 pt-4">
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Tanggal Akad/Pemberkatan</label>
+                        <input id="b-tgl-akad" type="date"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Waktu Akad (Cth: 08:00 WIB)</label>
+                        <input id="b-wkt-akad" type="time" placeholder="08:00 - Selesai"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Tanggal Resepsi</label>
+                        <input id="b-tgl-resepsi" type="date"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Waktu Resepsi</label>
+                        <div class="flex items-center gap-2">
+                            <input id="ab-wkt-resepsi-mulai" type="time"
+                                class="w-full bg-black border border-zinc-700 rounded-xl px-2 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                            <span class="text-zinc-500 font-bold">-</span>
+                            <input id="ab-wkt-resepsi-selesai" type="time"
+                                class="w-full bg-black border border-zinc-700 rounded-xl px-2 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-zinc-800 pt-4">
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Jumlah Undangan (Pax)</label>
+                        <input id="b-undangan" type="number" placeholder="Contoh: 500"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Paket Pesanan</label>
+                        <input id="b-pesanan" type="text" readonly
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-zinc-500 text-sm cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Konsep Pernikahan</label>
+                        <input id="b-konsep" type="text" placeholder="Cth: Adat Jawa / Modern Internasional"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Konsep Make Up</label>
+                        <input id="b-makeup" type="text" placeholder="Akad: Solo Putri, Resepsi: Modern"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Busana Pengantin</label>
+                        <input id="b-busana" type="text" placeholder="Warna, Adat, atau Request khusus"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-zinc-800 pt-4">
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Jadwal & Lokasi Prewedding</label>
+                        <textarea id="b-prewed" rows="2" placeholder="Diisi jika ada"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Jadwal & Lokasi TM</label>
+                        <textarea id="b-tm" rows="2" placeholder="Technical Meeting"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm resize-none"></textarea>
+                    </div>
+                </div>
+
+               
+                <div class="md:col-span-2 border-t border-zinc-800 pt-4 mt-2 hidden" id="area-tampil-upgrade-customer">
+                    <h5 class="font-bold text-blue-400 text-sm mb-2"><i class="fa-solid fa-arrow-up-right-dots"></i>
+                        Upgrade / Tambahan
+                        Layanan (Dari Admin)</h5>
+                    <div id="list-tampil-upgrade"
+                        class="bg-blue-900/10 border border-blue-500/20 p-3 rounded-xl space-y-2">
+                        
+                    </div>
+                    <p class="text-[10px] text-zinc-500 mt-1 italic">*Hubungi admin jika Anda ingin melakukan perubahan
+                        atau tambahan
+                        layanan (Upgrade).</p>
+                </div>
+
+                
+                <div class="border-t border-zinc-800 pt-4">
+                    <label class="block font-bold text-gold-500 mb-3 text-sm"><i
+                            class="fa-solid fa-list-check mr-2"></i>Daftar
+                        Vendor</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <input id="v-dekorasi" type="text" placeholder="Dekorasi"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-mua" type="text" placeholder="MUA Pengantin"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-keluarga" type="text" placeholder="Perias Keluarga"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-mc" type="text" placeholder="MC Acara"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ent" type="text" placeholder="Entertainment/Band"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-catering" type="text" placeholder="Catering"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-dok" type="text" placeholder="Dokumentasi (F/V)"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-sound" type="text" placeholder="Sound System"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-attire" type="text" placeholder="Attire/Baju"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-venue" type="text" placeholder="Venue/Gedung"
+                            class="col-span-2 sm:col-span-3 bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                    </div>
+                </div>
+
+                <div class="border-t border-zinc-800 pt-4">
+                    <label class="block font-bold text-zinc-400 mb-1 text-xs">Catatan Khusus</label>
+                    <textarea id="b-catatan" rows="3"
+                        class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 focus:border-gold-500 outline-none text-white text-sm resize-none"></textarea>
+                </div>
+
+                
+                <div
+                    class="bg-gold-500/10 border border-gold-500/30 p-4 rounded-[20px] flex flex-col md:flex-row gap-4 justify-between items-center">
+                    <div class="flex-1 text-center md:text-left">
+                        <h4 class="font-bold text-gold-400 text-sm mb-1">1. Download Buku Panduan</h4>
+                        <p class="text-xs text-gold-200/70">Unduh format dokumen, isi, lalu unggah kembali.</p>
+                        <a href="#" id="link-download-panduan" target="_blank"
+                            class="mt-2 inline-block bg-black border border-gold-500/50 text-gold-500 px-4 py-2 rounded-full text-xs font-bold hover:bg-gold-500 hover:text-black transition"><i
+                                class="fa-solid fa-download mr-1"></i> Unduh File</a>
+                    </div>
+                    <div class="w-full h-px md:w-px md:h-16 bg-gold-500/20"></div>
+                    <div class="flex-1 w-full text-center md:text-left">
+                        <h4 class="font-bold text-gold-400 text-sm mb-2">2. Upload Form yang Terisi</h4>
+                        <div onclick="document.getElementById('b-file-panduan').click()"
+                            class="relative w-full h-14 border border-dashed border-gold-500/50 rounded-xl bg-black hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer overflow-hidden group">
+                            <input type="file" id="b-file-panduan" accept=".pdf,.doc,.docx" class="hidden"
+                                onchange="prosesBukuPanduan(event)">
+                            <div id="b-file-icon"
+                                class="text-zinc-400 group-hover:text-gold-400 flex items-center gap-2">
+                                <i class="fa-solid fa-file-arrow-up"></i> <span id="b-file-name"
+                                    class="text-xs font-bold truncate max-w-[150px]">Pilih File (.pdf/.doc)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="simpanDataBerkas()" id="btn-simpan-berkas"
+                    class="w-full bg-gradient-to-r from-emerald-600 to-emerald-400 text-black font-extrabold py-4 rounded-full active:scale-[0.98] transition-all text-[15px] sm:text-[17px] shadow-lg shadow-emerald-500/20 mt-4"><i
+                        class="fa-solid fa-floppy-disk mr-2"></i> Simpan Data Berkas</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
