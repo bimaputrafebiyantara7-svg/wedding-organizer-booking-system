@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Admin Panel - BR WO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: { 300: '#FCE68D', 400: '#F3C623', 500: '#D4AF37', 600: '#AA8A2A', 700: '#80671F' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body class="text-zinc-100 h-screen flex overflow-hidden selection:bg-gold-500/30 relative bg-[#0a0a0a]">
+
+   
+    <div
+        class="fixed top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-gold-600/10 rounded-full blur-[120px] pointer-events-none z-0">
+    </div>
+    <div
+        class="fixed bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] bg-yellow-900/10 rounded-full blur-[120px] pointer-events-none z-0">
+    </div>
+
+   
+    <div id="full-page-loader"
+        class="fixed inset-0 z-[100] bg-[#0a0a0a]/95 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-700">
+        <div
+            class="relative w-24 h-24 md:w-28 md:h-28 flex items-center justify-center mb-6 p-2 rounded-full bg-zinc-900/50 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
+            <div class="absolute inset-0 border-4 border-zinc-800 rounded-full"></div>
+            <div
+                class="absolute inset-0 border-4 border-transparent border-t-gold-500 border-r-yellow-600 rounded-full animate-spin z-10">
+            </div>
+            <i id="loader-default-icon" class="fa-solid fa-crown text-3xl md:text-4xl text-gold-400 animate-pulse"></i>
+            <img id="loader-logo-img" src=""
+                class="w-full h-full object-contain rounded-full hidden animate-pulse bg-[#111] p-2 z-0 border border-zinc-800">
+        </div>
+        <h2 class="text-white text-xl md:text-2xl font-black tracking-widest text-gold-500 text-center px-4">MANAGEMENT
+            WO</h2>
+        <p class="text-zinc-400 text-xs md:text-sm mt-3 font-medium tracking-wide text-center" id="loader-status">
+            Memulai sistem...</p>
+        <div class="w-48 md:w-64 h-1.5 bg-zinc-800 rounded-full mt-6 overflow-hidden border border-gold-500/20">
+            <div id="loader-progress"
+                class="h-full bg-gradient-to-r from-gold-600 to-gold-400 w-0 transition-all duration-300"></div>
+        </div>
+    </div>
+
+    
+    <aside id="desktop-sidebar"
+        class="w-72 m-4 mr-0 bg-[#111]/80 backdrop-blur-xl rounded-[32px] shadow-2xl flex flex-col transition-all duration-300 overflow-hidden border border-gold-500/20 z-20 shrink-0 hidden md:flex relative">
+      <div class="p-8 pb-4 flex items-center gap-3">
+            <div
+                class="w-10 h-10 rounded-full bg-gradient-to-r from-gold-600 to-gold-400 text-black flex items-center justify-center shadow-lg shadow-gold-900/50 shrink-0 relative overflow-hidden border border-gold-500/50">
+                <i id="sidebar-logo-icon" class="fa-solid fa-chess-rook text-xl"></i>
+                <img id="sidebar-logo-img" src="" class="absolute inset-0 w-full h-full object-contain hidden bg-zinc-900 p-1 rounded-full">
+            </div>
+            <h1 class="text-xl font-bold tracking-tight text-gold-500 whitespace-nowrap">BR Admin</h1>
+        </div>
+        <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto hide-scrollbar">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard"
+                class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-gold-500 text-black font-bold transition-all shadow-md shadow-gold-900/20 active:scale-95 whitespace-nowrap"><i
+                    class="fa-solid fa-chart-pie w-5 text-lg"></i> Dashboard</button>
+            <button onclick="switchTab('produk')" id="nav-produk"
+                class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-zinc-400 hover:bg-zinc-800 hover:text-gold-400 font-semibold transition-all active:scale-95 whitespace-nowrap"><i
+                    class="fa-solid fa-layer-group w-5 text-lg"></i> Kelola Paket</button>
+            <button onclick="switchTab('vendor')" id="nav-vendor"
+                class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-zinc-400 hover:bg-zinc-800 hover:text-gold-400 font-semibold transition-all active:scale-95 whitespace-nowrap"><i
+                    class="fa-solid fa-store w-5 text-lg"></i> Kelola Vendor</button>
+            <button onclick="switchTab('penjualan')" id="nav-penjualan"
+                class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-zinc-400 hover:bg-zinc-800 hover:text-gold-400 font-semibold transition-all active:scale-95 whitespace-nowrap"><i
+                    class="fa-solid fa-calendar-check w-5 text-lg"></i> Data Booking</button>
+            <button onclick="switchTab('hnp')" id="nav-hnp"
+                class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-zinc-400 hover:bg-zinc-800 hover:text-gold-400 font-semibold transition-all active:scale-95 whitespace-nowrap"><i
+                    class="fa-solid fa-calendar-check w-5 text-lg"></i> Jadwal BR</button>
+            <button onclick="switchTab('jadwal')" id="nav-jadwal"
+                class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-zinc-400 hover:bg-zinc-800 hover:text-gold-400 font-semibold transition-all active:scale-95 whitespace-nowrap"><i
+                    class="fa-solid fa-calendar-day w-5 text-lg"></i> Jadwal Event</button>
+            <button onclick="switchTab('transkrip')" id="nav-transkrip"
+                class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-zinc-400 hover:bg-zinc-800 hover:text-gold-400 font-semibold transition-all active:scale-95 whitespace-nowrap"><i
+                    class="fa-solid fa-book w-5 text-lg"></i> Laporan Acara</button>
+            <button onclick="switchTab('pelanggan')" id="nav-pelanggan"
+                class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-zinc-400 hover:bg-zinc-800 hover:text-gold-400 font-semibold transition-all active:scale-95 whitespace-nowrap"><i
+                    class="fa-solid fa-users w-5 text-lg"></i> Daftar Klien</button>
+            <div class="pt-4 mt-4 border-t border-zinc-800">
+                <p class="px-4 text-[11px] font-bold text-gold-600 uppercase tracking-wider mb-2 whitespace-nowrap">
+                    Sistem</p>
+                <button onclick="switchTab('pengaturan')" id="nav-pengaturan"
+                    class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-zinc-400 hover:bg-zinc-800 hover:text-gold-400 font-semibold transition-all active:scale-95 whitespace-nowrap"><i
+                        class="fa-solid fa-cog w-5 text-lg"></i> Pengaturan Web</button>
+            </div>
+        </nav>
+    </aside>
+
+    
+    <button id="fab-menu" onclick="toggleMobileNav()"
+        class="md:hidden fixed bottom-6 right-5 z-[60] w-14 h-14 rounded-full bg-gradient-to-r from-gold-600 to-gold-400 text-black shadow-[0_0_15px_rgba(212,175,55,0.4)] flex items-center justify-center transition-all duration-400 ease-in-out active:scale-90 pb-safe">
+        <i id="fab-icon" class="fa-solid fa-bars text-xl transition-transform duration-300"></i>
+    </button>
+
+    
+    <div id="mobile-nav-container"
+        class="md:hidden fixed bottom-0 inset-x-0 glass-panel z-50 rounded-t-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.8)] safe-pb-nav transform translate-y-full transition-transform duration-400 ease-in-out border-t border-gold-500/30">
+        <div class="w-10 h-1.5 bg-zinc-600 mx-auto rounded-full mt-3 mb-1"></div>
+        <div class="flex justify-start p-2 pt-2 pl-4 pr-6 overflow-x-auto hide-scrollbar scroll-touch gap-2 pb-4">
+            <button onclick="switchTab('dashboard')" id="nav-mob-dashboard"
+                class="flex flex-col items-center justify-center gap-1.5 p-2 text-gold-500 min-w-[72px] shrink-0 active:scale-90 transition-transform"><i
+                    class="fa-solid fa-chart-pie text-[22px]"></i><span
+                    class="text-[10px] font-bold">Dash</span></button>
+            <button onclick="switchTab('produk')" id="nav-mob-produk"
+                class="flex flex-col items-center justify-center gap-1.5 p-2 text-zinc-500 hover:text-gold-400 min-w-[72px] shrink-0 active:scale-90 transition-transform"><i
+                    class="fa-solid fa-layer-group text-[22px]"></i><span
+                    class="text-[10px] font-bold">Paket</span></button>
+            <button onclick="switchTab('vendor')" id="nav-mob-vendor"
+                class="flex flex-col items-center justify-center gap-1.5 p-2 text-zinc-500 hover:text-gold-400 min-w-[72px] shrink-0 active:scale-90 transition-transform"><i
+                    class="fa-solid fa-store text-[22px]"></i><span class="text-[10px] font-bold">Vendor</span></button>
+            <button onclick="switchTab('penjualan')" id="nav-mob-penjualan"
+                class="flex flex-col items-center justify-center gap-1.5 p-2 text-zinc-500 hover:text-gold-400 min-w-[72px] shrink-0 active:scale-90 transition-transform"><i
+                    class="fa-solid fa-calendar-check text-[22px]"></i><span
+                    class="text-[10px] font-bold">Booking</span></button>
+            <button onclick="switchTab('hnp')" id="nav-mob-hnp"
+                class="flex flex-col items-center justify-center gap-1.5 p-2 text-zinc-500 hover:text-gold-400 min-w-[72px] shrink-0 active:scale-90 transition-transform"><i
+                    class="fa-solid fa-calendar-check text-[22px]"></i><span
+                    class="text-[10px] font-bold">BR</span></button>
+            <button onclick="switchTab('jadwal')" id="nav-mob-jadwal"
+                class="flex flex-col items-center justify-center gap-1.5 p-2 text-zinc-500 hover:text-gold-400 min-w-[72px] shrink-0 active:scale-90 transition-transform"><i
+                    class="fa-solid fa-calendar-day text-[22px]"></i><span
+                    class="text-[10px] font-bold">Jadwal</span></button>
+            <button onclick="switchTab('transkrip')" id="nav-mob-transkrip"
+                class="flex flex-col items-center justify-center gap-1.5 p-2 text-zinc-500 hover:text-gold-400 min-w-[72px] shrink-0 active:scale-90 transition-transform"><i
+                    class="fa-solid fa-book text-[22px]"></i><span class="text-[10px] font-bold">Laporan</span></button>
+            <button onclick="switchTab('pelanggan')" id="nav-mob-pelanggan"
+                class="flex flex-col items-center justify-center gap-1.5 p-2 text-zinc-500 hover:text-gold-400 min-w-[72px] shrink-0 active:scale-90 transition-transform"><i
+                    class="fa-solid fa-users text-[22px]"></i><span class="text-[10px] font-bold">Klien</span></button>
+            <button onclick="switchTab('pengaturan')" id="nav-mob-pengaturan"
+                class="flex flex-col items-center justify-center gap-1.5 p-2 text-zinc-500 hover:text-gold-400 min-w-[72px] shrink-0 active:scale-90 transition-transform"><i
+                    class="fa-solid fa-cog text-[22px]"></i><span class="text-[10px] font-bold">Setting</span></button>
+        </div>
+    </div>
+
+    
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative z-10" id="main-content-area">
+        <header
+            class="px-5 md:px-8 safe-pt pb-4 flex flex-row justify-between items-center shrink-0 bg-[#0a0a0a]/80 backdrop-blur-md z-10 border-b border-zinc-800 gap-2">
+            <div class="flex-1 flex items-center gap-3 md:gap-4">
+                <button onclick="toggleDesktopSidebar()" id="btn-toggle-sidebar"
+                    class="hidden md:flex w-10 h-10 rounded-xl bg-[#111] border border-zinc-800 text-zinc-400 hover:text-gold-500 hover:border-gold-500/50 items-center justify-center transition-colors shadow-sm cursor-pointer shrink-0"><i
+                        class="fa-solid fa-bars"></i></button>
+                <div class="overflow-hidden">
+                    <p
+                        class="text-gold-600 font-bold text-[10px] md:text-xs mb-0.5 uppercase tracking-widest hidden sm:block">
+                        Ringkasan Eksekutif</p>
+                    <h2 id="page-title"
+                        class="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight drop-shadow-sm truncate">
+                        Dashboard</h2>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <div id="loading-indicator"
+                    class="hidden items-center gap-1.5 bg-[#111] px-3 md:px-4 py-1.5 rounded-full shadow-sm border border-gold-500/20 text-gold-400 font-semibold text-[10px] md:text-sm">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> <span class="hidden sm:inline">Sinkronisasi</span>
+                </div>
+                <div
+                    class="flex items-center gap-2 bg-[#111] backdrop-blur-md px-2.5 md:px-4 py-1.5 rounded-full shadow-sm border border-zinc-800 transition-all">
+                    <div class="flex items-center gap-1.5 cursor-pointer group"
+                        onclick="document.getElementById('auto-sync-toggle').click()">
+                        <i id="sync-icon" class="fa-solid fa-rotate text-gold-500 text-xs transition-transform"></i>
+                        <span
+                            class="text-[10px] md:text-xs font-bold text-zinc-400 group-hover:text-gold-400 hidden sm:inline">AUTO
+                            SYNC</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="auto-sync-toggle" class="sr-only peer" onchange="toggleAutoSync()">
+                        <div
+                            class="w-6 md:w-7 h-3.5 md:h-4 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-gray-300 after:rounded-full after:h-2.5 md:after:h-3 after:w-2.5 md:after:w-3 after:transition-all peer-checked:bg-gold-500 peer-checked:after:bg-black shadow-inner border border-zinc-700">
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </header>
+
+        <div
+            class="flex-1 overflow-y-auto px-3 sm:px-4 md:px-8 pb-32 md:pb-8 pt-4 md:pt-6 hide-scrollbar scroll-touch relative">
+
+            
+            <section id="sec-dashboard" class="space-y-4 md:space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+                    <div onclick="showDashDetail('produk')"
+                        class="bg-[#111] p-4 md:p-6 rounded-[28px] shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-zinc-800 flex flex-col justify-between h-32 md:h-40 cursor-pointer mobile-card group relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-10 h-10 md:w-12 md:h-12 rounded-[14px] md:rounded-2xl bg-blue-900/30 border border-blue-500/20 text-blue-400 flex items-center justify-center text-lg md:text-xl shadow-inner">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <span
+                                class="text-[9px] md:text-[10px] font-bold text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity bg-blue-900/20 px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg flex items-center gap-1">Lihat
+                                <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                        <div>
+                            <p class="text-xs md:text-sm text-zinc-400 font-semibold">Katalog Paket Aktif</p>
+                            <h3 id="dash-produk" class="text-2xl md:text-3xl font-extrabold text-white">0</h3>
+                        </div>
+                    </div>
+                    <div onclick="showDashDetail('terjual')"
+                        class="bg-[#111] p-4 md:p-6 rounded-[28px] shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-zinc-800 flex flex-col justify-between h-32 md:h-40 cursor-pointer mobile-card group relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-10 h-10 md:w-12 md:h-12 rounded-[14px] md:rounded-2xl bg-emerald-900/30 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg md:text-xl shadow-inner">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <span
+                                class="text-[9px] md:text-[10px] font-bold text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity bg-emerald-900/20 px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg flex items-center gap-1">Lihat
+                                <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                        <div>
+                            <p class="text-xs md:text-sm text-zinc-400 font-semibold">Total Event / Pax</p>
+                            <h3 id="dash-terjual" class="text-2xl md:text-3xl font-extrabold text-white">0</h3>
+                        </div>
+                    </div>
+                    <div onclick="showDashDetail('pendapatan')"
+                        class="bg-[#111] p-4 md:p-6 rounded-[28px] shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-gold-500/20 flex flex-col justify-between h-32 md:h-40 cursor-pointer mobile-card group relative overflow-hidden sm:col-span-2 lg:col-span-1">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-10 h-10 md:w-12 md:h-12 rounded-[14px] md:rounded-2xl bg-gold-500/20 border border-gold-500/40 text-gold-400 flex items-center justify-center text-lg md:text-xl shadow-inner">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+                            <span
+                                class="text-[9px] md:text-[10px] font-bold text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity bg-gold-500/10 px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg flex items-center gap-1">Rekap
+                                <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                        <div>
+                            <p class="text-xs md:text-sm text-gold-600 font-bold uppercase tracking-wider">Estimasi
+                                Omzet</p>
+                            <h3 id="dash-pendapatan"
+                                class="text-2xl md:text-3xl font-black text-gold-500 drop-shadow-md">Rp 0</h3>
+                        </div>
+                    </div>
+
+                    
+                <div class="bg-[#111] p-4 md:p-6 rounded-[28px] border border-zinc-800 shadow-xl mt-4 md:mt-6">
+                    <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-3">
+                        <h3 class="font-bold text-gold-500 text-sm md:text-base tracking-tight"><i class="fa-solid fa-clock-rotate-left mr-2"></i>Log Aktivitas Admin</h3>
+                        <button onclick="fetchHistory()" class="text-zinc-400 hover:text-gold-400 transition bg-zinc-900 w-7 h-7 rounded-full flex items-center justify-center border border-zinc-800"><i class="fa-solid fa-rotate-right text-[10px]"></i></button>
+                    </div>
+                    <div id="list-history" class="space-y-3 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
+                        <p class="text-center text-zinc-600 text-xs py-4">Memuat aktivitas...</p>
+                    </div>
+                </div>
+
+                </div>
+            </section>
+
+            
+            <section id="sec-produk" class="hidden space-y-4 md:space-y-8">
+                <div class="bg-[#111] p-4 sm:p-5 md:p-8 rounded-[32px] md:rounded-[40px] shadow-2xl border border-gold-500/20 transition-all hidden"
+                    id="form-produk-container">
+                    <div class="flex flex-wrap sm:flex-nowrap justify-between items-center gap-3 mb-4 md:mb-6">
+                        <h3 class="text-base md:text-xl font-bold text-gold-500 tracking-tight flex items-center gap-2 w-full sm:w-auto"
+                            id="title-form-produk">
+                            <div
+                                class="w-6 h-6 md:w-7 md:h-7 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center text-[10px] md:text-xs border border-gold-500/30">
+                                <i class="fa-solid fa-plus" id="icon-form-produk"></i>
+                            </div>
+                            <span>Tambah Paket Baru</span>
+                        </h3>
+                        <div class="flex gap-2 w-full sm:w-auto justify-end">
+                            <button type="button" onclick="batalEditProduk()" id="btn-batal-edit"
+                                class="hidden text-[10px] md:text-xs bg-zinc-800 text-zinc-300 font-bold px-3 py-1.5 rounded-full hover:bg-zinc-700 border border-zinc-700">Batal
+                                Edit</button>
+                            <button type="button" onclick="toggleFormProduk()"
+                                class="text-[10px] md:text-xs bg-zinc-800 text-zinc-300 font-bold px-3 py-1.5 rounded-full hover:bg-zinc-700 border border-zinc-700"><i
+                                    class="fa-solid fa-times"></i> Tutup</button>
+                        </div>
+                    </div>
+
+                    <form id="form-produk" onsubmit="handleSaveProduk(event)"
+                        class="grid grid-cols-1 md:grid-cols-6 gap-3 md:gap-5">
+                        <div class="col-span-1 md:col-span-2"><label
+                                class="block text-[11px] md:text-[12px] font-bold text-zinc-400 uppercase mb-1 md:mb-2 ml-1">ID
+                                Paket</label><input type="text" id="p-id" required
+                                class="w-full bg-black border border-zinc-800 rounded-xl md:rounded-2xl px-3 py-2.5 md:px-4 md:py-3.5 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none font-semibold text-sm md:text-base text-white placeholder-zinc-600 transition-all">
+                        </div>
+                        <div class="col-span-1 md:col-span-4"><label
+                                class="block text-[11px] md:text-[12px] font-bold text-zinc-400 uppercase mb-1 md:mb-2 ml-1">Nama
+                                Paket Layanan</label><input type="text" id="p-nama" required
+                                placeholder="Cth: Paket Intimate 100 Pax"
+                                class="w-full bg-black border border-zinc-800 rounded-xl md:rounded-2xl px-3 py-2.5 md:px-4 md:py-3.5 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none font-semibold text-sm md:text-base text-white placeholder-zinc-600 transition-all">
+                        </div>
+
+                        <div class="col-span-1 md:col-span-6">
+                            <label
+                                class="block text-[11px] md:text-[12px] font-bold text-zinc-400 uppercase mb-1 md:mb-2 ml-1">Kategori
+                                Acara</label>
+                            <input list="list-kategori" id="p-kategori" required
+                                placeholder="Cth: Pernikahan, Lamaran, Siraman..."
+                                class="w-full bg-black border border-zinc-800 rounded-xl md:rounded-2xl px-3 py-2.5 md:px-4 md:py-3.5 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none font-semibold text-sm md:text-base text-white placeholder-zinc-600 transition-all">
+                            <datalist id="list-kategori"></datalist>
+                        </div>
+
+                        <div
+                            class="col-span-1 md:col-span-6 mt-1 bg-black border border-zinc-800 rounded-xl md:rounded-2xl p-3 md:p-4">
+                            <div class="flex justify-between items-center mb-3 border-b border-zinc-800 pb-2">
+                                <div>
+                                    <label
+                                        class="block text-[11px] md:text-[12px] font-bold text-gold-500 uppercase">Opsi
+                                        Kapasitas & Harga</label>
+                                    <p class="text-[9px] text-zinc-500 mt-0.5">Tentukan variasi venue/tipe paket dan
+                                        harganya.</p>
+                                </div>
+                                <button type="button" onclick="addVariantRow()"
+                                    class="bg-gold-500/20 text-gold-400 border border-gold-500/30 hover:bg-gold-500/40 px-3 py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition flex items-center gap-1.5"><i
+                                        class="fa-solid fa-plus"></i> Tambah Opsi</button>
+                            </div>
+                            <div id="variant-container"
+                                class="space-y-2 max-h-56 overflow-y-auto hide-scrollbar scroll-touch pb-2"></div>
+                        </div>
+
+                        <div class="col-span-1 md:col-span-6 mt-1">
+                            <label
+                                class="block text-[11px] md:text-[12px] font-bold text-zinc-400 uppercase mb-1 md:mb-2 ml-1">Fasilitas
+                                & Deskripsi <span
+                                    class="text-[9px] md:text-[10px] normal-case font-normal">(Opsional)</span></label>
+                            <textarea id="p-deskripsi" rows="3" placeholder="Tuliskan kelengkapan paket..."
+                                class="w-full bg-black border border-zinc-800 rounded-xl md:rounded-2xl px-3 py-2.5 md:px-4 md:py-3.5 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none font-semibold text-sm md:text-base text-white placeholder-zinc-600 transition-all"></textarea>
+                        </div>
+
+                        <div class="col-span-1 md:col-span-6 mt-1">
+                            <label
+                                class="block text-[11px] md:text-[12px] font-bold text-zinc-400 uppercase tracking-wider mb-1 md:mb-2 ml-1">Galeri
+                                Acara <span
+                                    class="text-[9px] md:text-[10px] lowercase italic font-normal text-gold-600 block sm:inline mt-0.5 sm:mt-0">(Dukung
+                                    multi-foto)</span></label>
+                            <div onclick="document.getElementById('p-gambar-file').click()"
+                                class="relative w-full min-h-[10rem] md:min-h-[12rem] rounded-xl md:rounded-[24px] bg-black border border-zinc-800 hover:border-gold-500/50 flex flex-col justify-center cursor-pointer overflow-hidden transition-colors p-3 md:p-4">
+                                <input type="file" id="p-gambar-file" accept="image/*" multiple class="hidden"
+                                    onchange="previewImageMultiple(event)">
+                                <div id="upload-placeholder"
+                                    class="text-center flex flex-col items-center py-4 md:py-6 w-full">
+                                    <div
+                                        class="w-12 h-12 md:w-14 md:h-14 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center shadow-sm mb-2 md:mb-3 text-gold-500">
+                                        <i class="fa-solid fa-camera text-lg md:text-xl"></i>
+                                    </div>
+                                    <span class="text-xs md:text-sm font-bold text-zinc-300">Ketuk untuk memilih
+                                        foto</span>
+                                </div>
+                                <div id="p-gambar-preview-container"
+                                    class="hidden flex flex-wrap gap-2 md:gap-3 items-center justify-center sm:justify-start w-full">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-span-1 md:col-span-6 flex justify-end mt-2 md:mt-4">
+                            <button type="submit" id="btn-submit-produk"
+                                class="bg-gradient-to-r from-gold-600 to-gold-400 text-black px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-full font-extrabold shadow-lg shadow-gold-500/20 flex items-center justify-center gap-2 active:scale-95 w-full sm:w-auto transition-all text-sm md:text-base"><i
+                                    class="fa-solid fa-cloud-arrow-up"></i> Simpan Paket</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div
+                    class="bg-[#111] rounded-[32px] md:rounded-[40px] shadow-2xl border border-zinc-800 overflow-hidden">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 md:p-6 border-b border-zinc-800 gap-3">
+                        <h3 class="font-bold text-gold-500 text-base md:text-xl tracking-tight">Katalog Paket WO</h3>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button onclick="toggleFormProduk()"
+                                class="bg-gold-500 hover:bg-gold-400 text-black px-4 py-2 rounded-xl md:rounded-full text-xs md:text-sm font-bold transition-colors flex-1 sm:flex-none flex items-center justify-center gap-2 shadow-md"><i
+                                    class="fa-solid fa-plus"></i> Tambah</button>
+                            <button onclick="fetchProduk(true)"
+                                class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-gold-500 w-10 h-10 rounded-xl md:rounded-full flex items-center justify-center transition active:scale-90 shrink-0"><i
+                                    class="fa-solid fa-rotate-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto scroll-touch pb-2">
+                        <table class="w-full text-left text-sm whitespace-nowrap min-w-[600px]">
+                            <thead class="bg-black border-b border-zinc-800 text-zinc-400">
+                                <tr>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-gold-600">
+                                        Foto</th>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-gold-600">
+                                        Nama Paket</th>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-gold-600">
+                                        Harga Estimasi</th>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-center text-gold-600">
+                                        Total Kuota/Pax</th>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-center text-gold-600">
+                                        Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-produk" class="divide-y divide-zinc-800 border-b border-zinc-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="sec-vendor" class="hidden space-y-4 md:space-y-8">
+                <div class="bg-[#111] p-4 sm:p-5 md:p-8 rounded-[32px] md:rounded-[40px] shadow-2xl border border-gold-500/20 transition-all hidden"
+                    id="form-vendor-container">
+                    <div class="flex justify-between items-center mb-4 md:mb-6">
+                        <h3 class="text-base md:text-xl font-bold text-gold-500 flex items-center gap-2"
+                            id="title-form-vendor">
+                            <i class="fa-solid fa-plus text-xs"></i> Tambah Vendor
+                        </h3>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="batalEditVendor()" id="btn-batal-edit-vendor"
+                                class="hidden text-xs bg-zinc-800 text-zinc-300 font-bold px-3 py-1.5 rounded-full hover:bg-zinc-700">Batal</button>
+                            <button type="button" onclick="toggleFormVendor()"
+                                class="text-xs bg-zinc-800 text-zinc-300 font-bold px-3 py-1.5 rounded-full hover:bg-zinc-700"><i
+                                    class="fa-solid fa-times"></i> Tutup</button>
+                        </div>
+                    </div>
+
+                    <form id="form-vendor" onsubmit="handleSaveVendor(event)"
+                        class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="hidden" id="v-id">
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-400 mb-1">Nama Vendor</label>
+                            <input type="text" id="v-nama" required placeholder="Cth: Dekorasi Indah"
+                                class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none focus:border-gold-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-400 mb-1">Kategori Vendor</label>
+                            <select id="v-kategori" required
+                                class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none focus:border-gold-500">
+                                <option value="" disabled selected>Pilih Kategori</option>
+                                <option value="Dekorasi">Dekorasi</option>
+                                <option value="MUA & Busana">MUA & Busana</option>
+                                <option value="Venue & Gedung">Venue & Gedung</option>
+                                <option value="Catering">Catering</option>
+                                <option value="Fotografi & Video">Dokumentasi</option>
+                                <option value="Hiburan & MC">Hiburan & MC</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-xs font-bold text-zinc-400 mb-1">Deskripsi Vendor</label>
+                            <textarea id="v-deskripsi" rows="3" placeholder="Deskripsi singkat..."
+                                class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none focus:border-gold-500 resize-none"></textarea>
+                        </div>
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-xs font-bold text-zinc-400 mb-1">Galeri (Multi Foto)</label>
+                            <div onclick="document.getElementById('v-gambar-file').click()"
+                                class="relative w-full min-h-[8rem] rounded-xl bg-black border border-zinc-800 hover:border-gold-500 flex flex-col justify-center cursor-pointer overflow-hidden p-3">
+                                <input type="file" id="v-gambar-file" accept="image/*" multiple class="hidden"
+                                    onchange="previewImageMultipleVendor(event)">
+                                <div id="upload-placeholder-vendor" class="text-center">
+                                    <i class="fa-solid fa-camera text-gold-500 text-xl mb-2"></i>
+                                    <p class="text-xs font-bold text-zinc-300">Pilih Foto Vendor</p>
+                                </div>
+                                <div id="v-gambar-preview-container"
+                                    class="hidden flex flex-wrap gap-2 items-center justify-center w-full"></div>
+                            </div>
+                        </div>
+                        <div class="col-span-1 md:col-span-2 flex justify-end mt-2">
+                            <button type="submit" id="btn-submit-vendor"
+                                class="bg-gold-500 text-black px-6 py-3 rounded-full font-bold shadow-lg hover:bg-gold-400 transition-all text-sm w-full md:w-auto"><i
+                                    class="fa-solid fa-save"></i> Simpan Vendor</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-[#111] rounded-[32px] shadow-2xl border border-zinc-800 overflow-hidden">
+                    <div class="flex justify-between items-center p-4 md:p-6 border-b border-zinc-800">
+                        <h3 class="font-bold text-gold-500 text-lg">Daftar Referensi Vendor</h3>
+                        <div class="flex gap-2">
+                            <button onclick="toggleFormVendor()"
+                                class="bg-gold-500 text-black px-4 py-2 rounded-full text-xs font-bold shadow-md"><i
+                                    class="fa-solid fa-plus"></i> Tambah</button>
+                            <button onclick="fetchVendor(true)"
+                                class="bg-zinc-800 text-gold-500 w-8 h-8 rounded-full flex items-center justify-center"><i
+                                    class="fa-solid fa-rotate-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto pb-2">
+                        <table class="w-full text-left text-sm whitespace-nowrap min-w-[500px]">
+                            <thead class="bg-black text-zinc-400">
+                                <tr>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold">Vendor</th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold">Kategori</th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-vendor" class="divide-y divide-zinc-800 border-b border-zinc-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="sec-penjualan" class="hidden space-y-4 md:space-y-6">
+                
+                <div class="bg-[#111] p-4 md:p-5 rounded-[24px] shadow-lg border border-zinc-800">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <h3 class="font-bold text-white text-base md:text-lg tracking-tight">Data Tanggal Pesanan Masuk</h3>
+
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                            
+                            <div class="flex bg-black p-1 rounded-xl border border-zinc-800 shadow-inner">
+                                <button onclick="switchPenjualanView('list')" id="btn-view-list"
+                                    class="bg-gold-500 text-black px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-bold shadow-sm transition-colors flex items-center gap-1.5"><i
+                                        class="fa-solid fa-list"></i> Tabel</button>
+                                <button onclick="switchPenjualanView('calendar')" id="btn-view-cal"
+                                    class="text-zinc-400 hover:text-gold-400 px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition-colors flex items-center gap-1.5"><i
+                                        class="fa-solid fa-calendar-days"></i> Kalender</button>
+                            </div>
+                            
+                            <button onclick="fetchPenjualan(true)"
+                                class="bg-zinc-800 text-gold-500 border border-zinc-700 w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center hover:bg-zinc-700 transition active:scale-95 shrink-0"><i
+                                    class="fa-solid fa-rotate-right text-xs"></i></button>
+                        </div>
+                    </div>
+
+                   
+                    <div id="filter-bulan-wrapper" class="mt-4 border-t border-zinc-800 pt-3">
+                        <div id="filter-bulan-container"
+                            class="flex gap-2 overflow-x-auto scroll-touch hide-scrollbar pb-1"></div>
+                    </div>
+                </div>
+
+                
+                <div id="view-list"
+                    class="bg-[#111] rounded-[32px] md:rounded-[40px] shadow-2xl border border-zinc-800 overflow-hidden transition-all duration-300">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 md:p-6 border-b border-zinc-800 gap-3">
+                        <h3 class="font-bold text-white text-base md:text-xl tracking-tight">Pesanan Masuk: <span
+                                id="label-bulan-aktif" class="text-gold-500">Semua Waktu</span></h3>
+
+                       
+                        <div class="relative w-full sm:w-64">
+                            <i
+                                class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+                            <input type="text" id="search-booking" onkeyup="renderTabelPenjualan(activeBulanFilter)"
+                                placeholder="Cari ID, Klien, Paket..."
+                                class="w-full bg-black border border-zinc-700 rounded-full px-3 py-1.5 pl-8 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none text-xs text-white placeholder-zinc-600 transition-all">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto scroll-touch pb-2">
+                        <table class="w-full text-left text-sm whitespace-nowrap min-w-[800px]">
+                            <thead class="bg-black border-b border-zinc-800 text-zinc-400">
+                                <tr>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-gold-600">
+                                        ID & Klien</th>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-gold-600">
+                                        Layanan & Pilihan</th>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-gold-600">
+                                        Estimasi & Item</th>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-center text-gold-600">
+                                        Berkas/Bukti</th>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-center text-gold-600">
+                                        Status Pembayaran</th>
+                                    <th
+                                        class="px-3 md:px-5 py-3 md:py-4 text-[10px] md:text-[11px] uppercase tracking-wider font-bold text-center text-gold-600">
+                                        Status Acara</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-penjualan" class="divide-y divide-zinc-800 border-b border-zinc-800">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+               
+                <div id="view-kalender" class="hidden space-y-4 md:space-y-6 transition-all duration-300">
+                    <div
+                        class="bg-[#111] p-4 md:p-6 rounded-[32px] md:rounded-[40px] shadow-2xl border border-zinc-800">
+                        <div class="flex justify-between items-center mb-4 md:mb-6 border-b border-zinc-800 pb-4">
+                            <button onclick="ubahBulanKalender(-1)"
+                                class="w-10 h-10 rounded-full bg-black border border-zinc-700 text-gold-500 hover:bg-gold-500 hover:text-black flex items-center justify-center transition shadow-sm"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
+                            <h3 id="kalender-title"
+                                class="font-black text-lg md:text-2xl text-white tracking-widest uppercase">Bulan Tahun
+                            </h3>
+                            <button onclick="ubahBulanKalender(1)"
+                                class="w-10 h-10 rounded-full bg-black border border-zinc-700 text-gold-500 hover:bg-gold-500 hover:text-black flex items-center justify-center transition shadow-sm"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+
+                        
+                        <div class="grid grid-cols-7 gap-1 md:gap-2 text-center mb-2">
+                            <div class="text-[10px] md:text-xs font-black text-red-500 py-1">Min</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Sen</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Sel</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Rab</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Kam</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Jum</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Sab</div>
+                        </div>
+
+                       
+                        <div id="kalender-grid" class="grid grid-cols-7 gap-1 md:gap-2"></div>
+                    </div>
+
+                   
+                    <div id="kalender-detail-container"
+                        class="hidden bg-[#111] p-4 md:p-6 rounded-[24px] shadow-2xl border border-gold-500/30 relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-gold-600/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2">
+                        </div>
+                        <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-3 relative z-10">
+                            <h4 class="font-bold text-gold-500 text-sm md:text-base tracking-tight"><i
+                                    class="fa-solid fa-calendar-day mr-2"></i>Data Pesanan Masuk: <span
+                                    id="kalender-tgl-terpilih" class="text-white"></span></h4>
+                            <button
+                                onclick="document.getElementById('kalender-detail-container').classList.add('hidden')"
+                                class="text-zinc-500 hover:text-red-500 w-6 h-6 flex items-center justify-center rounded-full bg-black border border-zinc-800 transition"><i
+                                    class="fa-solid fa-times"></i></button>
+                        </div>
+                        <div id="kalender-list-pesanan" class="space-y-3 relative z-10"></div>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="sec-hnp" class="hidden space-y-4 md:space-y-6 transition-all duration-300">
+                <div class="bg-[#111] p-4 md:p-6 rounded-[32px] md:rounded-[40px] shadow-2xl border border-zinc-800">
+                    <div class="flex justify-between items-center mb-4 md:mb-6 border-b border-zinc-800 pb-4">
+                        <button onclick="ubahBulanHNP(-1)"
+                            class="w-10 h-10 rounded-full bg-black border border-zinc-700 text-gold-500 hover:bg-gold-500 hover:text-black flex items-center justify-center transition shadow-sm"><i
+                                class="fa-solid fa-chevron-left"></i></button>
+                        <div class="text-center">
+                            <h3 id="hnp-kalender-title"
+                                class="font-black text-lg md:text-2xl text-white tracking-widest uppercase">Bulan Tahun
+                            </h3>
+                            <p class="text-[10px] text-zinc-400 mt-1">Klik tanggal untuk menambah catatan khusus.</p>
+                        </div>
+                        <button onclick="ubahBulanHNP(1)"
+                            class="w-10 h-10 rounded-full bg-black border border-zinc-700 text-gold-500 hover:bg-gold-500 hover:text-black flex items-center justify-center transition shadow-sm"><i
+                                class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                  
+                    <div class="grid grid-cols-7 gap-1 md:gap-2 text-center mb-2">
+                        <div class="text-[10px] md:text-xs font-black text-red-500 py-1">Min</div>
+                        <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Sen</div>
+                        <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Sel</div>
+                        <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Rab</div>
+                        <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Kam</div>
+                        <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Jum</div>
+                        <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Sab</div>
+                    </div>
+                    
+                    <div id="hnp-kalender-grid" class="grid grid-cols-7 gap-1 md:gap-2"></div>
+                </div>
+            </section>
+
+          
+    <div id="modal-detail-hnp" class="modal opacity-0 pointer-events-none fixed inset-0 flex items-center justify-center z-[100] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleModalDetailHNP()"></div>
+        <div class="modal-sheet bg-[#111] w-full sm:max-w-lg mx-auto rounded-[32px] shadow-[0_0_40px_rgba(212,175,55,0.15)] z-[105] flex flex-col relative p-5 sm:p-6 border border-gold-500/30 max-h-[90vh]">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4 shrink-0">
+                <h3 class="font-bold text-lg text-gold-500"><i class="fa-solid fa-calendar-day mr-2"></i>Agenda Hari Ini</h3>
+                <button onclick="toggleModalDetailHNP()" class="bg-zinc-800 w-8 h-8 rounded-full text-zinc-300 hover:text-white"><i class="fa-solid fa-times"></i></button>
+            </div>
+
+            <div class="overflow-y-auto hide-scrollbar flex-1 space-y-5">
+                <p id="hnp-detail-tgl" class="text-sm text-gold-400 font-bold border-b border-zinc-800 pb-2">Tanggal: -</p>
+
+                
+                <div>
+                    <h4 class="text-[11px] font-bold text-zinc-400 mb-2 uppercase tracking-wider"><i class="fa-solid fa-ring text-gold-500 mr-1"></i> Event Wedding (Hari H)</h4>
+                    <div id="hnp-detail-wedding" class="space-y-2"></div>
+                </div>
+
+              
+                <div>
+                    <h4 class="text-[11px] font-bold text-zinc-400 mb-2 uppercase tracking-wider"><i class="fa-solid fa-handshake text-blue-500 mr-1"></i> Technical Meeting (TM)</h4>
+                    <div id="hnp-detail-tm" class="space-y-2"></div>
+                </div>
+
+                
+                <div class="pt-3 border-t border-zinc-800">
+                    <h4 class="text-[11px] font-bold text-zinc-400 mb-2 uppercase tracking-wider"><i class="fa-solid fa-pen-to-square text-zinc-300 mr-1"></i> Memo / Catatan Admin</h4>
+                    <input type="hidden" id="hnp-tgl-input">
+                    <textarea id="hnp-catatan-input" rows="3" placeholder="Ketik memo atau catatan tambahan di sini..." class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-gold-500 resize-none"></textarea>
+                    <button onclick="simpanCatatanHNP()" id="btn-simpan-hnp" class="mt-3 bg-gold-500 hover:bg-gold-400 text-black font-bold py-3 rounded-xl transition shadow-lg w-full text-sm">Simpan Catatan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            
+            <div id="modal-edit-tm-hnp"
+                class="modal opacity-0 pointer-events-none fixed inset-0 flex items-center justify-center z-[110] transition-opacity duration-300">
+                <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleModalTmHNP()"></div>
+                <div
+                    class="modal-sheet bg-[#111] w-full sm:max-w-md mx-auto rounded-[32px] shadow-[0_0_40px_rgba(59,130,246,0.15)] z-[115] flex flex-col relative p-5 border border-blue-500/30">
+                    <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4">
+                        <h3 class="font-bold text-lg text-blue-400"><i class="fa-solid fa-handshake mr-2"></i>Update
+                            Info TM</h3>
+                        <button onclick="toggleModalTmHNP()"
+                            class="bg-zinc-800 w-8 h-8 rounded-full text-zinc-300 hover:text-white"><i
+                                class="fa-solid fa-times"></i></button>
+                    </div>
+                    <input type="hidden" id="hnp-tm-id">
+                    <p id="hnp-tm-klien" class="text-xs text-zinc-300 font-bold mb-3 pb-2 border-b border-zinc-800">
+                        Klien: -</p>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="block text-xs font-bold text-zinc-400 mb-1">Tgl TM</label><input
+                                    type="date" id="hnp-tm-tgl"
+                                    class="w-full bg-black border border-zinc-700 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500">
+                            </div>
+                            <div><label class="block text-xs font-bold text-zinc-400 mb-1">Waktu</label><input
+                                    type="time" id="hnp-tm-wkt"
+                                    class="w-full bg-black border border-zinc-700 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+                        <div><label class="block text-xs font-bold text-zinc-400 mb-1">Lokasi</label><input type="text"
+                                id="hnp-tm-lok"
+                                class="w-full bg-black border border-zinc-700 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500">
+                        </div>
+                        <div><label class="block text-xs font-bold text-zinc-400 mb-1">Status TM</label><select
+                                id="hnp-tm-stat"
+                                class="w-full bg-black border border-zinc-700 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500">
+                                <option value="Belum">Belum (Biru)</option>
+                                <option value="Sudah">Sudah (Hijau)</option>
+                            </select></div>
+                    </div>
+                    <button onclick="simpanTmBr()" id="btn-simpan-tm-Br"
+                        class="mt-5 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition shadow-lg w-full">Simpan
+                        Info TM</button>
+                </div>
+            </div>
+
+           
+            <section id="sec-jadwal" class="hidden space-y-4 md:space-y-6">
+                
+                <div
+                    class="bg-[#111] p-4 md:p-5 rounded-[24px] shadow-lg border border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <h3 class="font-bold text-white text-base md:text-lg tracking-tight">Manajemen Jadwal & Kru</h3>
+                        <p class="text-[10px] md:text-xs text-zinc-400">Atur penugasan kru untuk setiap event.</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                        <button onclick="bukaModalMasterKru()"
+                            class="bg-indigo-900/30 text-indigo-400 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-[10px] md:text-xs font-bold hover:bg-indigo-600 hover:text-white transition"><i
+                                class="fa-solid fa-users-gear mr-1"></i> Data Kru</button>
+                        <div class="flex bg-black p-1 rounded-xl border border-zinc-800 shadow-inner">
+                            <button onclick="switchJadwalView('list')" id="btn-view-jadwal-list"
+                                class="bg-gold-500 text-black px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-bold shadow-sm transition-colors flex items-center gap-1.5"><i
+                                    class="fa-solid fa-table"></i> Tabel</button>
+                            <button onclick="switchJadwalView('calendar')" id="btn-view-jadwal-cal"
+                                class="text-zinc-400 hover:text-gold-400 hover:bg-zinc-900 px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition-colors flex items-center gap-1.5"><i
+                                    class="fa-solid fa-calendar-days"></i> Kalender</button>
+                        </div>
+                        <button onclick="renderJadwalEvent()"
+                            class="bg-zinc-800 text-gold-500 border border-zinc-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-zinc-700 transition active:scale-95 shrink-0"><i
+                                class="fa-solid fa-rotate-right text-xs"></i></button>
+                    </div>
+                </div>
+
+                
+                <div
+                    class="flex flex-wrap md:flex-nowrap justify-between items-center gap-3 bg-[#111] p-3 md:p-4 rounded-[20px] shadow-sm border border-zinc-800">
+                    <div class="flex items-center gap-2">
+                        <select id="filter-jadwal-tahun" onchange="ubahFilterJadwal()"
+                            class="bg-black border border-zinc-700 text-gold-500 rounded-lg px-3 py-1.5 text-xs font-bold outline-none focus:border-gold-500">
+                            <option value="Semua">Semua Tahun</option>
+                        </select>
+                       
+                        <div id="filter-jadwal-bulan-container"
+                            class="flex gap-2 overflow-x-auto hide-scrollbar scroll-touch pb-1 max-w-[60vw] md:max-w-xl">
+                        </div>
+                    </div>
+                    <div
+                        class="bg-gold-500/20 border border-gold-500/40 px-4 py-1.5 rounded-lg text-xs font-bold text-gold-400 shadow-inner">
+                        Total Event: <span id="info-jumlah-event" class="text-white text-sm">0</span>
+                    </div>
+                </div>
+              
+                <div id="view-jadwal-list"
+                    class="bg-[#111] rounded-[32px] md:rounded-[40px] shadow-2xl border border-zinc-800 overflow-hidden transition-all duration-300">
+                    <div class="overflow-x-auto scroll-touch pb-4">
+                        <table class="w-full text-left text-sm whitespace-nowrap min-w-[1600px]">
+                            <thead class="bg-black border-b border-zinc-800 text-zinc-400">
+                                <tr>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-gold-600">Aksi</th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-gold-600">ID & Klien</th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-gold-600">Judul Event (CPP
+                                        & CPW)</th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-gold-600">Tgl & Lokasi
+                                        Akad/Resepsi</th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-gold-600">Layanan &
+                                        Pilihan</th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-blue-400">PJ / Penanggung
+                                        Jawab</th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-emerald-400">Info TM (Tgl,
+                                        Status, Lokasi)
+                                    </th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-purple-400">Kru Inti (MC,
+                                        Voc, Key, Sax)
+                                    </th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-orange-400">Kru WO
+                                        Tambahan</th>
+                                    <th class="px-4 py-3 text-[10px] uppercase font-bold text-zinc-400">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-jadwal-event" class="divide-y divide-zinc-800 border-b border-zinc-800">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+               
+                <div id="view-jadwal-kalender" class="hidden space-y-4 md:space-y-6 transition-all duration-300">
+                    <div
+                        class="bg-[#111] p-4 md:p-6 rounded-[32px] md:rounded-[40px] shadow-2xl border border-zinc-800">
+                        <div class="flex justify-between items-center mb-4 md:mb-6 border-b border-zinc-800 pb-4">
+                            <button onclick="ubahBulanJadwal(-1)"
+                                class="w-10 h-10 rounded-full bg-black border border-zinc-700 text-gold-500 hover:bg-gold-500 hover:text-black flex items-center justify-center transition shadow-sm"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
+                            <h3 id="jadwal-kalender-title"
+                                class="font-black text-lg md:text-2xl text-white tracking-widest uppercase">
+                                Bulan Tahun</h3>
+                            <button onclick="ubahBulanJadwal(1)"
+                                class="w-10 h-10 rounded-full bg-black border border-zinc-700 text-gold-500 hover:bg-gold-500 hover:text-black flex items-center justify-center transition shadow-sm"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1 md:gap-2 text-center mb-2">
+                            <div class="text-[10px] md:text-xs font-black text-red-500 py-1">Min</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Sen</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Sel</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Rab</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Kam</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Jum</div>
+                            <div class="text-[10px] md:text-xs font-bold text-zinc-500 py-1">Sab</div>
+                        </div>
+                        <div id="jadwal-kalender-grid" class="grid grid-cols-7 gap-1 md:gap-2"></div>
+                    </div>
+                  
+                    <div id="jadwal-kalender-detail-container"
+                        class="hidden bg-[#111] p-4 md:p-6 rounded-[24px] shadow-2xl border border-gold-500/30 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-3">
+                            <h4 class="font-bold text-gold-500 text-sm md:text-base"><i
+                                    class="fa-solid fa-calendar-day mr-2"></i>Jadwal
+                                Event: <span id="jadwal-kalender-tgl-terpilih" class="text-white"></span></h4>
+                            <button
+                                onclick="document.getElementById('jadwal-kalender-detail-container').classList.add('hidden')"
+                                class="text-zinc-500 hover:text-red-500 w-6 h-6 bg-black border border-zinc-800 rounded-full"><i
+                                    class="fa-solid fa-times"></i></button>
+                        </div>
+                        <div id="jadwal-kalender-list-acara" class="space-y-3 relative z-10"></div>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="sec-transkrip" class="hidden space-y-4 md:space-y-8">
+                <div class="bg-[#111] p-4 md:p-8 rounded-[32px] md:rounded-[40px] shadow-2xl border border-zinc-800">
+                    <div class="flex justify-between items-center mb-4 md:mb-6">
+                        <div>
+                            <h3 class="text-base md:text-xl font-bold text-gold-500 tracking-tight">Laporan
+                                Penyelenggaraan</h3>
+                            <p class="text-[10px] md:text-xs text-zinc-400 font-medium mt-0.5 md:mt-1">Ketuk paket untuk
+                                melihat rekap acara yang terselenggara.</p>
+                        </div>
+                        <button onclick="fetchTranskrip(true)"
+                            class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-gold-400 w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-full flex items-center justify-center shrink-0"><i
+                                class="fa-solid fa-rotate-right text-[10px] md:text-sm"></i></button>
+                    </div>
+                    <div id="grid-transkrip" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="sec-pelanggan" class="hidden space-y-4 md:space-y-8">
+                <div class="bg-[#111] p-4 md:p-8 rounded-[32px] md:rounded-[40px] shadow-2xl border border-zinc-800">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-3">
+                        <div>
+                            <h3 class="text-base md:text-xl font-bold text-gold-500 tracking-tight">Database Klien</h3>
+                            <p class="text-[10px] md:text-xs text-zinc-400 font-medium mt-0.5 md:mt-1">Daftar klien yang
+                                terdaftar
+                                di sistem.
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                          
+                            <div class="relative w-full sm:w-64">
+                                <i
+                                    class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+                                <input type="text" id="search-pelanggan" onkeyup="renderGridPelanggan()"
+                                    placeholder="Cari Nama / Username..."
+                                    class="w-full bg-black border border-zinc-700 rounded-full px-3 py-1.5 pl-8 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none text-xs text-white placeholder-zinc-600 transition-all">
+                            </div>
+                            <button onclick="fetchPelanggan(true)"
+                                class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-gold-400 w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center shrink-0 transition"><i
+                                    class="fa-solid fa-rotate-right text-[10px] md:text-xs"></i></button>
+                        </div>
+                    </div>
+                    <div id="grid-pelanggan" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="sec-pengaturan" class="hidden space-y-4 md:space-y-8">
+                <div class="bg-[#111] p-4 md:p-8 rounded-[32px] md:rounded-[40px] shadow-2xl border border-zinc-800">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-4 border-b border-zinc-800 pb-4">
+                        <div>
+                            <h3 class="text-base md:text-xl font-bold mb-1 md:mb-2 text-gold-500 tracking-tight">
+                                Settingan Sistem WO</h3>
+                            <p class="text-[10px] md:text-xs text-zinc-400">Ubah tampilan dan rekening untuk Klien.</p>
+                        </div>
+                        
+                        <button type="submit" form="form-pengaturan" id="btn-save-pengaturan"
+                            class="w-full sm:w-auto bg-gradient-to-r from-gold-600 to-gold-400 text-black px-6 py-2.5 md:py-3 rounded-xl md:rounded-full font-extrabold shadow-[0_0_15px_rgba(212,175,55,0.3)] active:scale-95 text-xs md:text-sm transition-all hover:brightness-110 shrink-0">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Pengaturan
+                        </button>
+                    </div>
+                    <form id="form-pengaturan" onsubmit="handleSavePengaturan(event)" class="space-y-4 md:space-y-6">
+
+                        <div
+                            class="bg-black border border-gold-500/20 p-4 md:p-5 rounded-[20px] md:rounded-[24px] space-y-3 md:space-y-4">
+                            <h4 class="font-bold text-gold-400 text-xs md:text-sm">Kontak & Rekening Pusat</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                                <div>
+                                    <label class="block font-bold text-xs md:text-sm text-zinc-400 mb-1">WhatsApp CS
+                                        (Notifikasi)</label>
+                                    <input type="text" id="set-admin-wa" placeholder="Contoh: 62812xxx"
+                                        class="w-full bg-[#111] border border-zinc-800 rounded-xl px-3 py-2.5 md:px-4 md:py-3 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-sm text-white placeholder-zinc-600">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-xs md:text-sm text-zinc-400 mb-1">Nama Rekening /
+                                        Perusahaan</label>
+                                    <input type="text" id="set-qris-name" placeholder="BR WO"
+                                        class="w-full bg-[#111] border border-zinc-800 rounded-xl px-3 py-2.5 md:px-4 md:py-3 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-sm text-white placeholder-zinc-600">
+                                </div>
+                            </div>
+
+                            
+                            <div class="col-span-1 md:col-span-2 mt-2 border-t border-zinc-800 pt-3">
+                                <label class="block font-bold text-xs md:text-sm text-gold-500 mb-1">Link Buku Panduan
+                                    (Google Drive)</label>
+                                <input type="text" id="set-link-panduan"
+                                    placeholder="https://docs.google.com/document/d/..."
+                                    class="w-full bg-[#111] border border-zinc-800 rounded-xl px-3 py-2.5 md:px-4 md:py-3 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 outline-none font-medium text-sm text-white placeholder-zinc-600">
+                                <p class="text-[9px] md:text-[10px] text-zinc-500 mt-1">Pastikan format File adalah
+                                    DOC/PDF, dan Link Drive dapat diakses oleh siapa saja (Anyone with the link can
+                                    view).</p>
+                            </div>
+
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            <div class="bg-black border border-zinc-800 p-4 md:p-5 rounded-[20px] md:rounded-[24px]">
+                                <label class="block font-bold text-gold-500 text-xs md:text-sm mb-3">Logo Web
+                                    Aplikasi</label>
+                                <div class="grid grid-cols-2 gap-3 md:gap-4">
+                                    <div class="flex flex-col items-center gap-2">
+                                        <div onclick="document.getElementById('set-logo-light').click()"
+                                            class="w-16 h-16 md:w-20 md:h-20 bg-zinc-200 rounded-[16px] md:rounded-[20px] flex items-center justify-center cursor-pointer shadow-sm relative overflow-hidden border border-zinc-400 hover:border-gold-500 transition group">
+                                            <input type="file" id="set-logo-light" accept="image/*" class="hidden"
+                                                onchange="openCropperSingle(event, 'preview-logo-light', 'base64LogoLight')">
+                                            <i class="fa-solid fa-image text-zinc-500 text-lg md:text-xl"></i>
+                                            <img id="preview-logo-light" src=""
+                                                class="absolute inset-0 w-full h-full object-contain p-2 hidden bg-zinc-100">
+                                            <div id="actions-preview-logo-light"
+                                                class="absolute top-1 right-1 flex gap-1 z-20 hidden">
+                                                <button type="button"
+                                                    onclick="openCropperFromUrl(event, 'preview-logo-light', 'base64LogoLight', false)"
+                                                    class="bg-gold-500 hover:bg-gold-400 text-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                        class="fa-solid fa-crop-simple text-[8px] md:text-[10px]"></i></button>
+                                                <button type="button"
+                                                    onclick="hapusGambarPreview(event, 'preview-logo-light', 'base64LogoLight')"
+                                                    class="bg-red-600 hover:bg-red-500 text-white w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                        class="fa-solid fa-trash text-[8px] md:text-[10px]"></i></button>
+                                            </div>
+                                        </div>
+                                        <span class="text-[9px] md:text-[10px] font-bold text-zinc-400 text-center">Mode
+                                            Terang</span>
+                                    </div>
+                                    <div class="flex flex-col items-center gap-2">
+                                        <div onclick="document.getElementById('set-logo-dark').click()"
+                                            class="w-16 h-16 md:w-20 md:h-20 bg-zinc-900 rounded-[16px] md:rounded-[20px] flex items-center justify-center cursor-pointer shadow-sm relative overflow-hidden border border-zinc-700 hover:border-gold-500 transition group">
+                                            <input type="file" id="set-logo-dark" accept="image/*" class="hidden"
+                                                onchange="openCropperSingle(event, 'preview-logo-dark', 'base64LogoDark')">
+                                            <i class="fa-solid fa-image text-zinc-600 text-lg md:text-xl"></i>
+                                            <img id="preview-logo-dark" src=""
+                                                class="absolute inset-0 w-full h-full object-contain p-2 hidden bg-zinc-900">
+                                            <div id="actions-preview-logo-dark"
+                                                class="absolute top-1 right-1 flex gap-1 z-20 hidden">
+                                                <button type="button"
+                                                    onclick="openCropperFromUrl(event, 'preview-logo-dark', 'base64LogoDark', false)"
+                                                    class="bg-gold-500 hover:bg-gold-400 text-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                        class="fa-solid fa-crop-simple text-[8px] md:text-[10px]"></i></button>
+                                                <button type="button"
+                                                    onclick="hapusGambarPreview(event, 'preview-logo-dark', 'base64LogoDark')"
+                                                    class="bg-red-600 hover:bg-red-500 text-white w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                        class="fa-solid fa-trash text-[8px] md:text-[10px]"></i></button>
+                                            </div>
+                                        </div>
+                                        <span class="text-[9px] md:text-[10px] font-bold text-zinc-400 text-center">Mode
+                                            Gelap</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-black border border-zinc-800 p-4 md:p-5 rounded-[20px] md:rounded-[24px]">
+                                <label class="block font-bold text-gold-500 text-xs md:text-sm mb-2">Wallpaper Login
+                                    Klien</label>
+                                <div onclick="document.getElementById('set-loginbg').click()"
+                                    class="w-full h-16 md:h-20 bg-zinc-900 rounded-[16px] md:rounded-[20px] flex items-center justify-center cursor-pointer shadow-sm relative overflow-hidden border border-zinc-700 hover:border-gold-500 transition group">
+                                    <input type="file" id="set-loginbg" accept="image/*" class="hidden"
+                                        onchange="openCropperSingle(event, 'preview-loginbg', 'base64LoginBg', true)">
+                                    <i class="fa-solid fa-image text-zinc-600 text-lg md:text-xl"></i>
+                                    <img id="preview-loginbg" src=""
+                                        class="absolute inset-0 w-full h-full object-cover hidden bg-zinc-900">
+                                    <div id="actions-preview-loginbg"
+                                        class="absolute top-1 right-1 flex gap-1 z-20 hidden">
+                                        <button type="button"
+                                            onclick="openCropperFromUrl(event, 'preview-loginbg', 'base64LoginBg', true)"
+                                            class="bg-gold-500 hover:bg-gold-400 text-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-crop-simple text-[8px] md:text-[10px]"></i></button>
+                                        <button type="button"
+                                            onclick="hapusGambarPreview(event, 'preview-loginbg', 'base64LoginBg')"
+                                            class="bg-red-600 hover:bg-red-500 text-white w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-trash text-[8px] md:text-[10px]"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black border border-zinc-800 p-4 md:p-5 rounded-[20px] md:rounded-[24px]">
+                            <label class="block font-bold text-gold-500 text-xs md:text-sm mb-3">Banner Highlight
+                                Acara</label>
+                            <div class="grid grid-cols-3 gap-2 md:gap-4">
+                                <div onclick="document.getElementById('set-ban1').click()"
+                                    class="h-20 md:h-28 bg-zinc-900 rounded-xl md:rounded-[20px] flex flex-col items-center justify-center cursor-pointer shadow-sm relative overflow-hidden border border-zinc-700 hover:border-gold-500 transition group">
+                                    <input type="file" id="set-ban1" accept="image/*" class="hidden"
+                                        onchange="openCropperSingle(event, 'preview-ban1', 'base64Ban1', true)">
+                                    <span class="text-[9px] md:text-[10px] font-bold text-zinc-500 mt-1 md:mt-2">Slot
+                                        1</span>
+                                    <img id="preview-ban1" src=""
+                                        class="absolute inset-0 w-full h-full object-cover hidden">
+                                    <div id="actions-preview-ban1"
+                                        class="absolute top-1 right-1 flex gap-1 z-20 hidden">
+                                        <button type="button"
+                                            onclick="openCropperFromUrl(event, 'preview-ban1', 'base64Ban1', true)"
+                                            class="bg-gold-500 hover:bg-gold-400 text-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-crop-simple text-[8px] md:text-[10px]"></i></button>
+                                        <button type="button"
+                                            onclick="hapusGambarPreview(event, 'preview-ban1', 'base64Ban1')"
+                                            class="bg-red-600 hover:bg-red-500 text-white w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-trash text-[8px] md:text-[10px]"></i></button>
+                                    </div>
+                                </div>
+                                <div onclick="document.getElementById('set-ban2').click()"
+                                    class="h-20 md:h-28 bg-zinc-900 rounded-xl md:rounded-[20px] flex flex-col items-center justify-center cursor-pointer shadow-sm relative overflow-hidden border border-zinc-700 hover:border-gold-500 transition group">
+                                    <input type="file" id="set-ban2" accept="image/*" class="hidden"
+                                        onchange="openCropperSingle(event, 'preview-ban2', 'base64Ban2', true)">
+                                    <span class="text-[9px] md:text-[10px] font-bold text-zinc-500 mt-1 md:mt-2">Slot
+                                        2</span>
+                                    <img id="preview-ban2" src=""
+                                        class="absolute inset-0 w-full h-full object-cover hidden">
+                                    <div id="actions-preview-ban2"
+                                        class="absolute top-1 right-1 flex gap-1 z-20 hidden">
+                                        <button type="button"
+                                            onclick="openCropperFromUrl(event, 'preview-ban2', 'base64Ban2', true)"
+                                            class="bg-gold-500 hover:bg-gold-400 text-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-crop-simple text-[8px] md:text-[10px]"></i></button>
+                                        <button type="button"
+                                            onclick="hapusGambarPreview(event, 'preview-ban2', 'base64Ban2')"
+                                            class="bg-red-600 hover:bg-red-500 text-white w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-trash text-[8px] md:text-[10px]"></i></button>
+                                    </div>
+                                </div>
+                                <div onclick="document.getElementById('set-ban3').click()"
+                                    class="h-20 md:h-28 bg-zinc-900 rounded-xl md:rounded-[20px] flex flex-col items-center justify-center cursor-pointer shadow-sm relative overflow-hidden border border-zinc-700 hover:border-gold-500 transition group">
+                                    <input type="file" id="set-ban3" accept="image/*" class="hidden"
+                                        onchange="openCropperSingle(event, 'preview-ban3', 'base64Ban3', true)">
+                                    <span class="text-[9px] md:text-[10px] font-bold text-zinc-500 mt-1 md:mt-2">Slot
+                                        3</span>
+                                    <img id="preview-ban3" src=""
+                                        class="absolute inset-0 w-full h-full object-cover hidden">
+                                    <div id="actions-preview-ban3"
+                                        class="absolute top-1 right-1 flex gap-1 z-20 hidden">
+                                        <button type="button"
+                                            onclick="openCropperFromUrl(event, 'preview-ban3', 'base64Ban3', true)"
+                                            class="bg-gold-500 hover:bg-gold-400 text-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-crop-simple text-[8px] md:text-[10px]"></i></button>
+                                        <button type="button"
+                                            onclick="hapusGambarPreview(event, 'preview-ban3', 'base64Ban3')"
+                                            class="bg-red-600 hover:bg-red-500 text-white w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-trash text-[8px] md:text-[10px]"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black border border-zinc-800 p-4 md:p-5 rounded-[20px] md:rounded-[24px]">
+                            <label class="block font-bold text-gold-500 text-xs md:text-sm mb-3">Barcode Pembayaran
+                                (QRIS)</label>
+                            <div class="grid grid-cols-2 gap-3 md:gap-4">
+                                <div class="bg-zinc-900 p-2 md:p-3 rounded-xl md:rounded-[20px] border border-zinc-800 flex flex-col items-center justify-center cursor-pointer relative overflow-hidden hover:border-gold-500 transition group"
+                                    onclick="document.getElementById('set-qris-lunas').click()">
+                                    <p
+                                        class="text-[9px] md:text-[11px] font-bold text-zinc-400 mb-1 md:mb-2 text-center group-hover:text-gold-500">
+                                        QRIS Pelunasan Full</p>
+                                    <i class="fa-solid fa-qrcode text-zinc-600 mb-1 group-hover:text-gold-600"></i>
+                                    <input type="file" id="set-qris-lunas" accept="image/*" class="hidden"
+                                        onchange="openCropperSingle(event, 'preview-qris-lunas', 'base64QrisLunas', true)">
+                                    <img id="preview-qris-lunas" src=""
+                                        class="absolute inset-0 w-full h-full object-contain bg-zinc-900 p-2 hidden">
+                                    <div id="actions-preview-qris-lunas"
+                                        class="absolute top-1 right-1 flex gap-1 z-20 hidden">
+                                        <button type="button"
+                                            onclick="openCropperFromUrl(event, 'preview-qris-lunas', 'base64QrisLunas', true)"
+                                            class="bg-gold-500 hover:bg-gold-400 text-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-crop-simple text-[8px] md:text-[10px]"></i></button>
+                                        <button type="button"
+                                            onclick="hapusGambarPreview(event, 'preview-qris-lunas', 'base64QrisLunas')"
+                                            class="bg-red-600 hover:bg-red-500 text-white w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-trash text-[8px] md:text-[10px]"></i></button>
+                                    </div>
+                                </div>
+                                <div class="bg-zinc-900 p-2 md:p-3 rounded-xl md:rounded-[20px] border border-zinc-800 flex flex-col items-center justify-center cursor-pointer relative overflow-hidden hover:border-gold-500 transition group"
+                                    onclick="document.getElementById('set-qris-dp').click()">
+                                    <p
+                                        class="text-[9px] md:text-[11px] font-bold text-zinc-400 mb-1 md:mb-2 text-center group-hover:text-gold-500">
+                                        QRIS Deposit (DP)</p>
+                                    <i class="fa-solid fa-qrcode text-zinc-600 mb-1 group-hover:text-gold-600"></i>
+                                    <input type="file" id="set-qris-dp" accept="image/*" class="hidden"
+                                        onchange="openCropperSingle(event, 'preview-qris-dp', 'base64QrisDp', true)">
+                                    <img id="preview-qris-dp" src=""
+                                        class="absolute inset-0 w-full h-full object-contain bg-zinc-900 p-2 hidden">
+                                    <div id="actions-preview-qris-dp"
+                                        class="absolute top-1 right-1 flex gap-1 z-20 hidden">
+                                        <button type="button"
+                                            onclick="openCropperFromUrl(event, 'preview-qris-dp', 'base64QrisDp', true)"
+                                            class="bg-gold-500 hover:bg-gold-400 text-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-crop-simple text-[8px] md:text-[10px]"></i></button>
+                                        <button type="button"
+                                            onclick="hapusGambarPreview(event, 'preview-qris-dp', 'base64QrisDp')"
+                                            class="bg-red-600 hover:bg-red-500 text-white w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-lg"><i
+                                                class="fa-solid fa-trash text-[8px] md:text-[10px]"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+   
+    <div id="modal-harga"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-[100] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/80 backdrop-blur-sm" onclick="toggleModalHarga()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-md mx-auto rounded-[32px] sm:rounded-[40px] shadow-2xl z-[100] flex flex-col relative p-5 sm:p-6 border border-gold-500/30">
+            <h3 class="font-bold text-lg sm:text-xl text-gold-500 mb-4"><i
+                    class="fa-solid fa-file-invoice-dollar mr-2"></i>Penawaran Harga Acara Custom</h3>
+            <input type="hidden" id="mh-id">
+            <div class="space-y-4">
+                <div>
+                    <label class="font-bold text-zinc-400 text-xs block mb-1">Total Estimasi Disepakati (Rp)</label>
+                    <input type="number" id="mh-harga" oninput="hitungDPCustom('pct')"
+                        class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2.5 text-white font-bold outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500">
+                </div>
+                <div>
+                    <label class="font-bold text-zinc-400 text-xs block mb-1">Pilihan Pembayaran Utama</label>
+                    <select id="mh-metode"
+                        class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2.5 text-white font-bold outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500">
+                        <option value="Transfer">Transfer Bank / QRIS</option>
+                        <option value="Cash">Cash di Kantor</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-bold text-zinc-400 text-xs block mb-1">Tipe Tagihan</label>
+                    <select id="mh-tipe" onchange="toggleMHDpUI()"
+                        class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2.5 text-white font-bold outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500">
+                        <option value="Lunas">Bayar Lunas</option>
+                        <option value="DP">Deposit / DP</option>
+                    </select>
+                </div>
+                
+                <div id="mh-area-dp" class="hidden bg-gold-500/10 p-3 md:p-4 rounded-xl border border-gold-500/20 mt-2">
+                    <label class="font-bold text-gold-500 text-[11px] block mb-2 uppercase tracking-wider">Tentukan
+                        Nilai Deposit</label>
+                    <div class="flex gap-2 items-center">
+                        <div class="relative flex-1">
+                            <input type="number" id="mh-dp-pct" placeholder="%" value="30"
+                                oninput="hitungDPCustom('pct')"
+                                class="w-full bg-black border border-zinc-700 rounded-lg px-2 sm:px-3 py-2.5 text-white font-bold outline-none focus:border-gold-500 text-xs sm:text-sm transition-colors">
+                            <span
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 font-bold text-xs">%</span>
+                        </div>
+                        <span class="text-zinc-500 font-bold">=</span>
+                        <div class="relative flex-[2]">
+                            <span
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 font-bold text-xs">Rp</span>
+                            <input type="number" id="mh-dp-nom" placeholder="Nominal" oninput="hitungDPCustom('nom')"
+                                class="w-full bg-black border border-zinc-700 rounded-lg pl-8 pr-3 py-2.5 text-gold-400 font-bold outline-none focus:border-gold-500 text-xs sm:text-sm transition-colors">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 flex gap-3">
+                <button onclick="toggleModalHarga()"
+                    class="flex-1 bg-zinc-800 text-zinc-300 py-3 rounded-xl font-bold hover:bg-zinc-700 transition">Batal</button>
+                <button onclick="simpanHargaCustom()"
+                    class="flex-1 bg-gold-500 text-black py-3 rounded-xl font-bold shadow-lg hover:bg-gold-400 transition">Kirim
+                    Penawaran</button>
+            </div>
+        </div>
+    </div>
+
+   
+    <div id="modal-detail-produk"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-end sm:items-center justify-center z-[80] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/80 backdrop-blur-md" onclick="toggleModalDetailProduk()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-md mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-[0_0_30px_rgba(212,175,55,0.1)] z-[80] flex flex-col relative p-5 sm:p-6 pb-safe border border-zinc-800">
+            <div class="w-12 h-1.5 bg-zinc-700 mx-auto rounded-full mt-1 mb-3 sm:hidden"></div>
+            <button type="button" onclick="toggleModalDetailProduk()"
+                class="absolute top-4 right-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i
+                    class="fa-solid fa-times"></i></button>
+            <h3 class="font-bold text-lg sm:text-xl text-gold-500 border-b border-zinc-800 pb-3 mb-3 sm:mb-4">Rincian
+                Layanan</h3>
+            <div id="content-detail-produk"
+                class="space-y-4 sm:space-y-5 overflow-y-auto hide-scrollbar scroll-touch max-h-[75vh] pb-8"></div>
+        </div>
+    </div>
+
+    
+    <div id="modal-dash-detail"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-end sm:items-center justify-center z-[85] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/80 backdrop-blur-md" onclick="toggleModalDashDetail()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-2xl mx-auto rounded-t-[32px] sm:rounded-t-[40px] shadow-2xl z-[85] flex flex-col relative pb-safe border border-zinc-800 max-h-[90vh]">
+            <div
+                class="px-5 sm:px-6 py-4 sm:py-5 border-b border-zinc-800 flex justify-between items-center sticky top-0 bg-[#111] rounded-t-[32px] sm:rounded-t-[40px] z-10 pt-safe-or-4">
+                <h3 id="dash-detail-title" class="font-bold text-lg sm:text-xl text-gold-500 truncate pr-4">Detail</h3>
+                <button type="button" onclick="toggleModalDashDetail()"
+                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 w-8 h-8 rounded-full flex items-center justify-center transition-colors shrink-0"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-zinc-700 rounded-full sm:hidden z-20">
+            </div>
+            <div id="dash-detail-content" class="p-4 sm:p-6 overflow-y-auto hide-scrollbar scroll-touch flex-1 pb-10">
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-bukti"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-[90] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/90 backdrop-blur-md" onclick="toggleModalBukti()"></div>
+        <div
+            class="modal-sheet bg-transparent w-full sm:max-w-xl mx-auto rounded-[32px] sm:rounded-[40px] z-[90] flex flex-col items-center relative p-4">
+            <div
+                class="bg-[#111] p-2 rounded-[24px] sm:rounded-[32px] w-full max-w-sm mx-auto shadow-2xl relative border border-gold-500/30">
+                <button type="button" onclick="toggleModalBukti()"
+                    class="absolute -top-4 -right-4 bg-zinc-800 text-gold-500 w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-gold-500/50 hover:bg-black"><i
+                        class="fa-solid fa-times"></i></button>
+                <img id="img-bukti-detail" src=""
+                    class="w-full h-auto max-h-[75vh] object-contain rounded-[20px] sm:rounded-[24px] bg-black">
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-transkrip"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-end justify-center z-[70] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/80 backdrop-blur-md" onclick="toggleModalTranskrip()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-4xl mx-auto rounded-t-[32px] sm:rounded-t-[40px] shadow-[0_0_40px_rgba(212,175,55,0.1)] z-[70] max-h-[90vh] flex flex-col relative pb-safe border-t border-gold-500/30">
+            <div class="w-12 h-1.5 bg-zinc-700 mx-auto rounded-full mt-3 sm:hidden"></div>
+            <div class="px-5 py-3 sm:py-4 flex justify-between items-start shrink-0 border-b border-zinc-800 mb-2">
+                <div class="pr-4">
+                    <h3 id="transkrip-nama-produk" class="font-bold text-lg sm:text-xl text-gold-500 truncate">Nama
+                        Paket</h3>
+                </div>
+                <button type="button" onclick="toggleModalTranskrip()"
+                    class="bg-zinc-800 w-8 h-8 rounded-full text-zinc-300 hover:bg-zinc-700 shrink-0"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="px-4 sm:px-5 mb-2">
+                <div id="transkrip-filter-bulan" class="flex gap-2 overflow-x-auto hide-scrollbar pb-2"></div>
+            </div>
+            <div id="transkrip-summary-varian" class="px-4 sm:px-5 mb-4 grid grid-cols-2 md:grid-cols-4 gap-2"></div>
+            <div class="flex-1 overflow-y-auto px-4 sm:px-5 pb-8 bg-black rounded-t-[24px] sm:rounded-t-[32px] pt-4">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap min-w-[400px]">
+                        <thead class="border-b border-zinc-800 text-zinc-400">
+                            <tr>
+                                <th class="px-3 py-2 sm:py-3 text-[10px] sm:text-xs">ID Event</th>
+                                <th class="px-3 py-2 sm:py-3 text-[10px] sm:text-xs">Klien</th>
+                                <th class="px-3 py-2 sm:py-3 text-[10px] sm:text-xs">Item/Pax</th>
+                                <th class="px-3 py-2 sm:py-3 text-center text-[10px] sm:text-xs">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transkrip-table-body" class="divide-y divide-zinc-800/50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-pelanggan"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-end justify-center z-[70] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/80 backdrop-blur-md" onclick="toggleModalPelanggan()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-2xl mx-auto rounded-t-[32px] sm:rounded-t-[40px] shadow-2xl z-[70] max-h-[90vh] flex flex-col relative pb-safe border-t border-gold-500/20">
+            <div class="w-12 h-1.5 bg-zinc-700 mx-auto rounded-full mt-3 sm:hidden"></div>
+            <div class="px-5 py-3 sm:py-4 flex justify-between items-start shrink-0">
+                <div class="flex gap-3 sm:gap-4 items-center pr-4">
+                    <img id="dtl-foto" src=""
+                        class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 sm:border-4 border-gold-500 shadow-[0_0_10px_rgba(212,175,55,0.4)] bg-black">
+                    <div class="overflow-hidden">
+                        <h3 id="dtl-nama" class="font-bold text-base sm:text-xl text-white truncate">Klien</h3>
+                        <p id="dtl-user" class="text-gold-500 font-semibold text-xs sm:text-sm truncate">@user</p>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleModalPelanggan()"
+                    class="bg-zinc-800 w-8 h-8 rounded-full text-zinc-300 hover:bg-zinc-700 shrink-0"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto px-4 sm:px-5 pb-8 mt-2">
+                <div id="list-pesanan-pelanggan" class="space-y-2 sm:space-y-3"></div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-detail-pesanan"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-end sm:items-center justify-center z-[80] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/80 backdrop-blur-md" onclick="toggleModalDetailPesanan()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-md mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-[0_0_30px_rgba(212,175,55,0.15)] z-[80] flex flex-col relative p-5 sm:p-6 pb-safe border border-zinc-800">
+            <div class="w-12 h-1.5 bg-zinc-700 mx-auto rounded-full mt-1 mb-3 sm:hidden"></div>
+            <div class="flex justify-between items-center mb-3 sm:mb-4 border-b border-zinc-800 pb-3">
+                <h3 class="font-bold text-lg sm:text-xl text-gold-500">Logistik Acara</h3>
+                <div class="flex gap-2">
+                    <button type="button" onclick="cetakStruk()"
+                        class="bg-gold-500/20 text-gold-500 hover:bg-gold-500 hover:text-black w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm"><i
+                            class="fa-solid fa-print"></i></button>
+                    <button type="button" onclick="toggleModalDetailPesanan()"
+                        class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i
+                            class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+            <div id="content-detail-pesanan"
+                class="space-y-4 sm:space-y-5 overflow-y-auto hide-scrollbar scroll-touch max-h-[75vh] pb-6"></div>
+        </div>
+    </div>
+
+   
+    <div id="modal-edit-jadwal"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-center justify-center z-[90] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="toggleModalEditJadwal()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-4xl mx-auto rounded-[32px] shadow-[0_0_40px_rgba(212,175,55,0.15)] z-[95] flex flex-col relative pb-safe border border-gold-500/30 max-h-[90vh]">
+            <div class="px-5 py-4 flex justify-between items-center border-b border-zinc-800 shrink-0">
+                <h3 class="font-bold text-lg text-gold-500"><i class="fa-solid fa-clipboard-user mr-2"></i>Edit
+                    Penugasan & Jadwal</h3>
+                <button onclick="toggleModalEditJadwal()"
+                    class="bg-zinc-800 w-8 h-8 rounded-full text-zinc-300 hover:text-white"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto flex-1 space-y-5 hide-scrollbar">
+                <input type="hidden" id="ej-id-booking">
+
+              
+                <div
+                    class="bg-black border border-zinc-800 p-4 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-3 text-[10px] md:text-xs text-zinc-300">
+                    <div><span class="block text-zinc-500 font-bold mb-0.5">Klien:</span><span id="ej-info-klien"
+                            class="font-bold text-white">-</span></div>
+                    <div><span class="block text-zinc-500 font-bold mb-0.5">Judul Event:</span><span id="ej-info-judul"
+                            class="font-bold text-white">-</span></div>
+                    <div><span class="block text-zinc-500 font-bold mb-0.5">Paket:</span><span id="ej-info-paket"
+                            class="font-bold text-gold-400">-</span></div>
+                    <div><span class="block text-zinc-500 font-bold mb-0.5">Tgl Akad/Resepsi:</span><span
+                            id="ej-info-tgl" class="font-bold text-white">-</span></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-zinc-800 pt-4">
+                    
+                    <div class="space-y-4">
+                        <div><label class="block text-xs font-bold text-gold-500 mb-1">Penanggung Jawab
+                                (PJ)</label><input type="text" id="ej-pj" placeholder="Nama PJ Utama"
+                                class="w-full bg-black border border-zinc-700 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-gold-500">
+                        </div>
+                        <div class="bg-blue-900/10 border border-blue-500/20 p-3 rounded-xl space-y-3">
+                            <h4 class="font-bold text-blue-400 text-xs border-b border-blue-500/20 pb-1">Info Technical
+                                Meeting (TM)
+                            </h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="block text-[10px] font-bold text-zinc-400 mb-1">Tanggal
+                                        TM</label><input type="date" id="ej-tgl-tm"
+                                        class="w-full bg-black border border-zinc-700 rounded-lg px-2 py-1.5 text-white text-xs outline-none focus:border-blue-500">
+                                </div>
+                                <div><label class="block text-[10px] font-bold text-zinc-400 mb-1">Waktu
+                                        TM</label><input type="time" id="ej-wkt-tm"
+                                        class="w-full bg-black border border-zinc-700 rounded-lg px-2 py-1.5 text-white text-xs outline-none focus:border-blue-500">
+                                </div>
+                            </div>
+                            <div><label class="block text-[10px] font-bold text-zinc-400 mb-1">Lokasi
+                                    TM</label><textarea id="ej-lokasi-tm" rows="2"
+                                    class="w-full bg-black border border-zinc-700 text-white text-xs rounded-lg px-3 py-1.5 outline-none resize-none focus:border-blue-500"
+                                    placeholder="Ketik lokasi TM..."></textarea></div>
+                            <div><label class="block text-[10px] font-bold text-zinc-400 mb-1">Status TM</label><select
+                                    id="ej-status-tm"
+                                    class="w-full bg-black border border-zinc-700 rounded-lg px-3 py-1.5 text-white text-xs outline-none focus:border-blue-500">
+                                    <option value="Belum">Belum (Biru)</option>
+                                    <option value="Sudah">Sudah (Hijau)</option>
+                                </select></div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="space-y-3 bg-purple-900/10 border border-purple-500/20 p-3 rounded-xl">
+                        <h4 class="font-bold text-purple-400 text-xs border-b border-purple-500/20 pb-1">Kru Utama
+                            (Talent)</h4>
+                        <div><label class="block text-[10px] font-bold text-zinc-400 mb-1">MC Acara</label><select
+                                id="ej-mc"
+                                class="sel-master w-full bg-black border border-zinc-700 rounded-lg px-3 py-1.5 text-white text-xs"></select>
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-zinc-400 mb-1">Vocal</label><select
+                                id="ej-vocal"
+                                class="sel-master w-full bg-black border border-zinc-700 rounded-lg px-3 py-1.5 text-white text-xs"></select>
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-zinc-400 mb-1">Keyboard</label><select
+                                id="ej-keyboard"
+                                class="sel-master w-full bg-black border border-zinc-700 rounded-lg px-3 py-1.5 text-white text-xs"></select>
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-zinc-400 mb-1">Saxophone</label><select
+                                id="ej-sexo"
+                                class="sel-master w-full bg-black border border-zinc-700 rounded-lg px-3 py-1.5 text-white text-xs"></select>
+                        </div>
+                    </div>
+
+                    
+                    <div class="space-y-4">
+                        <div class="bg-orange-900/10 border border-orange-500/20 p-3 rounded-xl">
+                            <div class="flex justify-between items-center border-b border-orange-500/20 pb-1 mb-2">
+                                <h4 class="font-bold text-orange-400 text-xs">Kru WO</h4>
+                                <button onclick="tambahBarisWO()"
+                                    class="text-[9px] bg-orange-600 hover:bg-orange-500 text-white px-2 py-0.5 rounded font-bold transition"><i
+                                        class="fa-solid fa-plus"></i> Tambah</button>
+                            </div>
+                            <div id="ej-container-wo" class="space-y-2 max-h-40 overflow-y-auto hide-scrollbar"></div>
+                        </div>
+                        <div><label class="block text-xs font-bold text-zinc-400 mb-1">Keterangan
+                                Khusus</label><textarea id="ej-keterangan" rows="2"
+                                class="w-full bg-black border border-zinc-700 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-gold-500 resize-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-zinc-800 flex justify-end gap-3 shrink-0">
+                <button onclick="toggleModalEditJadwal()"
+                    class="bg-zinc-800 text-zinc-300 px-5 py-2.5 rounded-xl font-bold hover:bg-zinc-700 text-sm">Batal</button>
+                <button onclick="simpanJadwalEvent()"
+                    class="bg-gold-500 text-black px-6 py-2.5 rounded-xl font-extrabold shadow-lg hover:bg-gold-400 text-sm"><i
+                        class="fa-solid fa-save mr-1"></i> Simpan Penugasan</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-master-kru"
+        class="modal opacity-0 pointer-events-none fixed inset-0 flex items-center justify-center z-[100] transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="bukaModalMasterKru()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-md mx-auto rounded-[32px] shadow-[0_0_40px_rgba(212,175,55,0.15)] z-[105] flex flex-col relative p-5 border border-indigo-500/30 max-h-[85vh]">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4">
+                <h3 class="font-bold text-lg text-indigo-400"><i class="fa-solid fa-database mr-2"></i>Master Data Kru
+                </h3>
+                <button onclick="bukaModalMasterKru()"
+                    class="bg-zinc-800 w-8 h-8 rounded-full text-zinc-300 hover:text-white"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-xs font-bold text-zinc-400 mb-1">Pilih Kategori Kru:</label>
+                <select id="mk-kategori" onchange="renderMasterKruList()"
+                    class="w-full bg-black border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-indigo-500">
+                    <option value="mc">MC Acara</option>
+                    <option value="vocal">Vocalist</option>
+                    <option value="keyboard">Keyboardist</option>
+                    <option value="sexo">Saxophone</option>
+                    <option value="wo">Kru WO Tambahan</option>
+                </select>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                <input type="text" id="mk-nama-baru" placeholder="Nama Kru" class="flex-1 bg-black border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-indigo-500">
+                <input type="number" id="mk-wa-baru" placeholder="No WA (Cth: 0812...)" class="flex-1 bg-black border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-indigo-500">
+                <button id="btn-add-kru" onclick="tambahMasterKru()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition flex items-center justify-center min-w-[50px]"><i class="fa-solid fa-plus"></i></button>
+            </div>
+
+            <div
+                class="flex-1 overflow-y-auto hide-scrollbar bg-black border border-zinc-800 rounded-xl p-2 min-h-[200px]">
+                <ul id="mk-list" class="space-y-1"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-edit-berkas"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-end sm:items-center justify-center z-[90] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/80 backdrop-blur-md" onclick="toggleModalEditBerkas()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-3xl mx-auto rounded-t-[32px] sm:rounded-[40px] shadow-[0_0_40px_rgba(212,175,55,0.15)] z-[95] flex flex-col relative pb-safe border border-gold-500/30 max-h-[90vh]">
+            <div class="w-12 h-1.5 bg-zinc-700 mx-auto rounded-full mt-3 sm:hidden shrink-0"></div>
+            <div class="px-5 sm:px-6 py-4 flex justify-between items-center shrink-0 border-b border-zinc-800">
+                <div>
+                    <h3 class="font-bold text-lg sm:text-xl text-gold-500 tracking-tight"><i
+                            class="fa-solid fa-folder-open mr-2"></i>Data Pemberkasan Klien</h3>
+                    <p id="ab-id-title" class="text-[10px] md:text-xs text-zinc-400 font-mono mt-0.5">ID: -</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="cetakBerkasAdmin()" title="Cetak Berkas"
+                        class="bg-gold-500/20 hover:bg-gold-500 text-gold-500 hover:text-black w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm shrink-0"><i
+                            class="fa-solid fa-print"></i></button>
+                    <button type="button" onclick="toggleModalEditBerkas()" title="Tutup"
+                        class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 w-8 h-8 rounded-full flex items-center justify-center transition-colors shrink-0"><i
+                            class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+
+            <div class="p-5 sm:p-6 overflow-y-auto hide-scrollbar scroll-touch flex-1 space-y-5">
+                <input type="hidden" id="ab-id-booking">
+                <input type="hidden" id="ab-username">
+
+                
+                <div
+                    class="bg-indigo-900/20 border border-indigo-500/30 p-4 rounded-[20px] flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h4 class="font-bold text-indigo-400 text-sm">Dokumen Terlampir</h4>
+                        <p class="text-[10px] text-zinc-400 mt-0.5">Unduh form yang telah diisi klien atau unggah
+                            revisi.</p>
+                    </div>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <a href="#" id="ab-link-download" target="_blank"
+                            class="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold text-center transition shadow-md"><i
+                                class="fa-solid fa-download mr-1"></i> Unduh File Klien</a>
+                        <button onclick="document.getElementById('ab-file-upload').click()"
+                            class="flex-1 sm:flex-none bg-zinc-800 border border-zinc-700 text-zinc-300 px-4 py-2 rounded-xl text-xs font-bold hover:text-gold-400 transition"><i
+                                class="fa-solid fa-upload mr-1"></i> Timpa File</button>
+                        <input type="file" id="ab-file-upload" accept=".pdf,.doc,.docx" class="hidden"
+                            onchange="prosesFileBerkasAdmin(event)">
+                    </div>
+                </div>
+                <p id="ab-file-name" class="text-xs text-gold-500 font-medium text-center hidden mt-1"></p>
+
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Nama CPP (Pria)</label><input
+                            id="ab-cpp" type="text"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Nama CPW (Wanita)</label><input
+                            id="ab-cpw" type="text"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-t border-zinc-800 pt-4">
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Tanggal Akad</label><input
+                            id="ab-tgl-akad" type="date"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Waktu Akad</label><input
+                            id="ab-wkt-akad" type="time"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Tanggal Resepsi</label><input
+                            id="ab-tgl-resepsi" type="date"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-zinc-400 mb-1 text-xs">Waktu Resepsi</label>
+                        <div class="flex items-center gap-2">
+                            <input id="ab-wkt-resepsi-mulai" type="time" class="w-full bg-black border border-zinc-700 rounded-xl px-2 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                            <span class="text-zinc-500 font-bold">-</span>
+                            <input id="ab-wkt-resepsi-selesai" type="time" class="w-full bg-black border border-zinc-700 rounded-xl px-2 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-zinc-800 pt-4">
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Undangan (Pax)</label><input
+                            id="ab-undangan" type="number"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+
+                    <div class="md:col-span-2 border-t border-zinc-800 pt-4 mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer w-max mb-3">
+                            <input type="checkbox" id="ab-is-upgrade"
+                                class="w-4 h-4 accent-gold-500 rounded bg-black border-zinc-700"
+                                onchange="toggleAbUpgradeArea()">
+                            <span class="font-bold text-blue-400 text-sm">Ada Upgrade / Tambahan Paket?</span>
+                        </label>
+                        <div id="area-ab-upgrade-paket"
+                            class="hidden bg-blue-900/10 border border-blue-500/20 p-4 rounded-xl space-y-3">
+                            <div class="flex justify-between items-center mb-1">
+                                <h5 class="font-bold text-white text-xs">Rincian Tambahan / Upgrade</h5>
+                                <button type="button" onclick="addAbUpgradeRow()"
+                                    class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-[10px] font-bold shadow-sm transition"><i
+                                        class="fa-solid fa-plus"></i> Tambah Item</button>
+                            </div>
+                            <div id="list-ab-upgrade-paket" class="space-y-2"></div>
+                        </div>
+                    </div>
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Paket Pesanan</label><input
+                            id="ab-pesanan" type="text"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Konsep Acara</label><input
+                            id="ab-konsep" type="text"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Konsep Make Up</label><input
+                            id="ab-makeup" type="text"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+                    <div class="md:col-span-2"><label
+                            class="block font-bold text-zinc-400 mb-1 text-xs">Busana</label><input id="ab-busana"
+                            type="text"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-zinc-800 pt-4">
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Prewedding</label><textarea
+                            id="ab-prewed" rows="2"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none resize-none"></textarea>
+                    </div>
+                    <div><label class="block font-bold text-zinc-400 mb-1 text-xs">Technical Meeting</label><textarea
+                            id="ab-tm" rows="2"
+                            class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none resize-none"></textarea>
+                    </div>
+                </div>
+
+                
+                <div class="border-t border-zinc-800 pt-4">
+                    <label class="block font-bold text-gold-500 mb-3 text-sm"><i
+                            class="fa-solid fa-list-check mr-2"></i>Catatan Vendor</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <input id="v-ab-dekorasi" type="text" placeholder="Dekorasi"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ab-mua" type="text" placeholder="MUA"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ab-keluarga" type="text" placeholder="Perias Keluarga"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ab-mc" type="text" placeholder="MC"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ab-ent" type="text" placeholder="Entertainment"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ab-catering" type="text" placeholder="Catering"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ab-dok" type="text" placeholder="Dokumentasi"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ab-sound" type="text" placeholder="Sound System"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ab-attire" type="text" placeholder="Attire"
+                            class="bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                        <input id="v-ab-venue" type="text" placeholder="Venue/Gedung"
+                            class="col-span-2 sm:col-span-3 bg-black border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:border-gold-500">
+                    </div>
+                </div>
+
+                <div class="border-t border-zinc-800 pt-4">
+                    <label class="block font-bold text-zinc-400 mb-1 text-xs">Catatan Khusus Klien</label>
+                    <textarea id="ab-catatan" rows="3"
+                        class="w-full bg-black border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-gold-500 outline-none resize-none"></textarea>
+                </div>
+            </div>
+
+            <div class="p-5 border-t border-zinc-800 flex gap-3">
+                <button onclick="toggleModalEditBerkas()"
+                    class="w-1/3 bg-zinc-800 text-zinc-300 py-3.5 rounded-xl font-bold hover:bg-zinc-700 transition">Batal</button>
+                <button onclick="simpanBerkasAdmin()" id="btn-simpan-berkas-admin"
+                    class="w-2/3 bg-gold-500 text-black py-3.5 rounded-xl font-extrabold shadow-lg shadow-gold-500/20 hover:bg-gold-400 transition active:scale-95 flex items-center justify-center gap-2"><i
+                        class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modal-cropper"
+        class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-[100] transition-opacity duration-300">
+        <div class="absolute w-full h-full bg-black/95 backdrop-blur-md" onclick="closeCropper()"></div>
+        <div
+            class="modal-sheet bg-[#111] w-full sm:max-w-xl mx-auto rounded-[32px] shadow-2xl z-[100] flex flex-col relative p-4 border border-gold-500/30">
+            <h3 class="text-gold-500 font-bold text-base md:text-lg mb-3 px-2">Sesuaikan Dimensi</h3>
+            <div
+                class="w-full h-[50vh] md:h-[60vh] bg-black rounded-xl overflow-hidden relative border border-zinc-800">
+                <img id="cropper-image" src="" crossorigin="anonymous" class="max-w-full block">
+            </div>
+            <div class="flex justify-between items-center mt-4 px-1">
+                <div class="flex gap-2">
+                    <button type="button" onclick="cropperInstance.zoom(0.1)"
+                        class="bg-zinc-800 hover:bg-zinc-700 text-gold-500 w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-md border border-zinc-700"><i
+                            class="fa-solid fa-magnifying-glass-plus text-sm"></i></button>
+                    <button type="button" onclick="cropperInstance.zoom(-0.1)"
+                        class="bg-zinc-800 hover:bg-zinc-700 text-gold-500 w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-md border border-zinc-700"><i
+                            class="fa-solid fa-magnifying-glass-minus text-sm"></i></button>
+                    <button type="button" onclick="cropperInstance.rotate(90)"
+                        class="bg-zinc-800 hover:bg-zinc-700 text-gold-500 w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-md border border-zinc-700"><i
+                            class="fa-solid fa-rotate-right text-sm"></i></button>
+                </div>
+                <div class="flex gap-2 sm:gap-3">
+                    <button type="button" onclick="closeCropper()"
+                        class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-colors">Batal</button>
+                    <button type="button" onclick="applyCrop()"
+                        class="bg-gold-500 hover:bg-gold-400 text-black px-4 sm:px-6 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm shadow-lg transition-colors">Gunakan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <script src="admin.js"></script>
+</body>
+
+</html>
