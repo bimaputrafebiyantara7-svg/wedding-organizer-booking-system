@@ -1436,7 +1436,7 @@ const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', 
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
                         <img src="${item}" class="w-full h-full object-cover">
                         <div class="absolute bottom-12 left-8 z-20 text-white">
-                            <h2 class="text-2xl sm:text-4xl font-extrabold mb-2 text-gold-400 drop-shadow-lg">HNP Organizer</h2>
+                            <h2 class="text-2xl sm:text-4xl font-extrabold mb-2 text-gold-400 drop-shadow-lg">BR Organizer</h2>
                         </div>
                     </div>`;
                 } else {
@@ -2176,7 +2176,7 @@ const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', 
             
             let waNumbers = waValue.split(',');
             let firstNum = formatWaNumber(waNumbers[0]);
-            let textWa = encodeURIComponent("Halo Admin HNP Wedding Organizer, saya ingin konsultasi mengenai paket pernikahan.");
+            let textWa = encodeURIComponent("Halo Admin BR Wedding Organizer, saya ingin konsultasi mengenai paket pernikahan.");
 
             window.open(`https://wa.me/${firstNum}?text=${textWa}`, '_blank');
         }
