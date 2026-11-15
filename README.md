@@ -1,4 +1,4 @@
-[dokumentasi_proyek_br_wedding_organizer.md](https://github.com/user-attachments/files/34867474/dokumentasi_proyek_br_wedding_organizer.md)
+
 # 💍 BR Wedding Organizer — Wedding Management & Booking System
 
 Aplikasi web pemesanan dan manajemen layanan *Wedding Organizer* (WO) yang elegan, modern, dan *mobile-responsive*. Dibangun menggunakan **PHP Native (PDO REST API)**, **MySQL**, **Tailwind CSS**, dan **Vanilla JavaScript (Fetch API)** dengan tema *Luxury Dark & Gold*.
